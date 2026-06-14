@@ -309,16 +309,33 @@ const db        = getDatabase(app);
 const messaging = getMessaging(app);
 
 const COMMODITIES = [
-  {id:'creditDumps',  name:'Credit Dumps',     icon:'💳',base:200 },
-  {id:'fakeIds',      name:'Fake IDs',          icon:'🪪',base:150 },
-  {id:'corpSecrets',  name:'Corp Secrets',      icon:'🏢',base:800 },
-  {id:'cryptoKeys',   name:'Crypto Keys',       icon:'🔑',base:500 },
-  {id:'zeroDays',     name:'Zero-Day Exploits', icon:'💣',base:2000},
-  {id:'darkContracts',name:'Dark Contracts',    icon:'📜',base:1200},
-  {id:'biometrics',   name:'Biometric Data',    icon:'🧬',base:650 },
-  {id:'govFiles',     name:'Gov Files',         icon:'🗃️',base:1800},
-  {id:'ransomware',   name:'Ransomware Kits',   icon:'☣️',base:3000},
-  {id:'vpnAccounts',  name:'VPN Accounts',      icon:'🌐',base:100 },
+  // Original
+  {id:'creditDumps',    name:'Credit Dumps',        icon:'💳', base:200  },
+  {id:'fakeIds',        name:'Fake IDs',             icon:'🪪', base:150  },
+  {id:'corpSecrets',    name:'Corp Secrets',         icon:'🏢', base:800  },
+  {id:'cryptoKeys',     name:'Crypto Keys',          icon:'🔑', base:500  },
+  {id:'zeroDays',       name:'Zero-Day Exploits',    icon:'💣', base:2000 },
+  {id:'darkContracts',  name:'Dark Contracts',       icon:'📜', base:1200 },
+  {id:'biometrics',     name:'Biometric Data',       icon:'🧬', base:650  },
+  {id:'govFiles',       name:'Gov Files',            icon:'🗃️', base:1800 },
+  {id:'ransomware',     name:'Ransomware Kits',      icon:'☣️', base:3000 },
+  {id:'vpnAccounts',    name:'VPN Accounts',         icon:'🌐', base:100  },
+  // New
+  {id:'passportForge',  name:'Forged Passports',     icon:'📕', base:2500 },
+  {id:'insiderTips',    name:'Insider Trading Tips', icon:'📈', base:950  },
+  {id:'hitContracts',   name:'Hit Contracts',        icon:'🔫', base:5000 },
+  {id:'droneJammer',    name:'Drone Jammers',        icon:'📡', base:1400 },
+  {id:'cryptoMixer',    name:'Crypto Mixers',        icon:'🔄', base:1100 },
+  {id:'simSwapKits',    name:'SIM Swap Kits',        icon:'📱', base:400  },
+  {id:'bankwires',      name:'Dirty Bankwires',      icon:'🏦', base:3500 },
+  {id:'deepfakeRigs',   name:'Deepfake Rigs',        icon:'🎭', base:1700 },
+  {id:'stolenNfts',     name:'Stolen NFTs',          icon:'🖼️', base:300  },
+  {id:'prisonContraband',name:'Prison Contraband',   icon:'⛓️', base:600  },
+  {id:'weaponMods',     name:'Illegal Weapon Mods',  icon:'🔧', base:2200 },
+  {id:'satelliteHacks', name:'Satellite Hacks',      icon:'🛰️', base:4500 },
+  {id:'humanTraffickingLists', name:'Witness Lists', icon:'👤', base:8000 },
+  {id:'nukeBlueprints', name:'Nuclear Blueprints',   icon:'☢️', base:9500 },
+  {id:'chemFormulas',   name:'Chemical Formulas',    icon:'🧪', base:3800 },
 ];
 
 const MANIP_TIERS = [
