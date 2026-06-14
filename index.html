@@ -292,7 +292,10 @@ h1,h2{font-family:'Orbitron',sans-serif;}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, push, onValue, remove, query, orderByChild, limitToLast }
   from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+import { getMessaging, getToken, onMessage }
+  from "https://www.gstatic.com/firebasejs/11.0.0/firebase-messaging.js";
 
+const VAPID_KEY = "BMNYwid-IBAKxg-TtlvV4FI0jXAAvn7IDsuNs4LOrQglVEUo9czHl8wX8tg-9KCiv179fBWsTvq3TjexIupGgCM";
 const app = initializeApp({
   apiKey:"AIzaSyDfgiph_O4UlnvH-Xpfxa-IzeyUkIJUYiY",
   authDomain:"black-market-a0d1f.firebaseapp.com",
@@ -302,7 +305,8 @@ const app = initializeApp({
   messagingSenderId:"358168391161",
   appId:"1:358168391161:web:9053d40a859e9bacdae128",
 });
-const db = getDatabase(app);
+const db        = getDatabase(app);
+const messaging = getMessaging(app);
 
 const COMMODITIES = [
   {id:'creditDumps',  name:'Credit Dumps',     icon:'💳',base:200 },
@@ -428,7 +432,18 @@ function initApp() {
   loadPrices();
   startPriceTick();
   startTopupTick();
+  registerPushToken();
   switchTab('market');
+}
+
+async function registerPushToken() {
+  try {
+    const reg = await navigator.serviceWorker.register('/blackmarket/firebase-messaging-sw.js');
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return;
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+    if (token) await update(ref(db, `users/${me.id}`), { fcmToken: token });
+  } catch(e) { console.warn('Push setup failed:', e); }
 }
 
 function subscribeUser() {
