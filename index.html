@@ -140,6 +140,23 @@ h1,h2{font-family:'Orbitron',sans-serif;}
 .manip-actions{display:flex;gap:8px;}
 .manip-actions button{flex:1;padding:8px;border-radius:4px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.8em;background:transparent;}
 
+/* INSTRUCTIONS OVERLAY */
+#help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:600;flex-direction:column;overflow-y:auto;}
+#help-overlay.open{display:flex;}
+.help-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.help-header h2{font-family:'Orbitron',sans-serif;color:var(--g);font-size:1em;}
+.help-body{padding:16px;flex:1;}
+.help-section{margin-bottom:20px;}
+.help-section h3{font-family:'Orbitron',sans-serif;font-size:.78em;color:var(--orange);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.help-row{display:flex;gap:10px;margin-bottom:8px;font-size:.8em;line-height:1.5;}
+.help-tag{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:2px 7px;font-size:.85em;white-space:nowrap;align-self:flex-start;margin-top:1px;}
+.help-tag.g{border-color:var(--g);color:var(--g);}
+.help-tag.r{border-color:var(--r);color:var(--r);}
+.help-tag.y{border-color:var(--y);color:var(--y);}
+.help-tag.p{border-color:var(--purple);color:var(--purple);}
+.help-tag.o{border-color:var(--orange);color:var(--orange);}
+.help-desc{color:var(--dim);}
+
 /* ATTACK MODAL */
 #attack-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center;}
 #attack-modal.open{display:flex;}
@@ -218,6 +235,7 @@ h1,h2{font-family:'Orbitron',sans-serif;}
     <div class="top-bar-right">
       <div class="chip chip-g">💰 <span id="top-balance">0</span> CR</div>
       <div class="chip chip-dim">+5K in <span id="topup-timer">--:--</span></div>
+      <button class="btn btn-sm" style="border-color:var(--dim);color:var(--dim);" onclick="openHelp()">? HELP</button>
       <button class="btn btn-sm btn-red" onclick="doLogout()">EXIT</button>
     </div>
   </div>
@@ -226,6 +244,7 @@ h1,h2{font-family:'Orbitron',sans-serif;}
     <div class="tab" onclick="switchTab('portfolio')">💼 PORTFOLIO</div>
     <div class="tab" onclick="switchTab('chat')">💬 CHAT</div>
     <div class="tab" onclick="switchTab('leaderboard')">🏆 RANKS</div>
+    <div class="tab" onclick="switchTab('raid')">⚔️ RAID</div>
   </div>
 
   <div id="tab-market"><div class="price-bar">Prices update every 5 min · Next: <span id="price-timer">--:--</span></div><div id="market-list"></div></div>
@@ -238,6 +257,10 @@ h1,h2{font-family:'Orbitron',sans-serif;}
     </div>
   </div>
   <div id="tab-leaderboard" style="display:none;"></div>
+  <div id="tab-raid" style="display:none;padding:10px 12px 80px;overflow-y:auto;">
+    <div style="font-size:.72em;color:var(--dim);margin-bottom:10px;">Select a player to raid their holdings. You have 20 seconds once launched. Fee: 500 CR (lost if intercepted).</div>
+    <div id="raid-list"></div>
+  </div>
 </div>
 
 <!-- MANIPULATION MODAL -->
@@ -253,6 +276,46 @@ h1,h2{font-family:'Orbitron',sans-serif;}
     <div class="manip-actions">
       <button style="border:1px solid var(--r);color:var(--r);" onclick="closeManipModal()">CANCEL</button>
       <button style="border:1px solid var(--purple);color:var(--purple);" onclick="confirmManip()">EXECUTE</button>
+    </div>
+  </div>
+</div>
+
+<!-- HELP OVERLAY -->
+<div id="help-overlay">
+  <div class="help-header">
+    <h2>📖 HOW TO PLAY</h2>
+    <button class="btn btn-sm btn-red" onclick="closeHelp()">✕ CLOSE</button>
+  </div>
+  <div class="help-body">
+    <div class="help-section">
+      <h3>💰 CREDITS</h3>
+      <div class="help-row"><span class="help-tag">START</span><span class="help-desc">You begin with 10,000 CR</span></div>
+      <div class="help-row"><span class="help-tag">TOP-UP</span><span class="help-desc">Every 30 minutes you automatically receive +5,000 CR</span></div>
+    </div>
+    <div class="help-section">
+      <h3>📈 TRADING</h3>
+      <div class="help-row"><span class="help-tag g">BUY</span><span class="help-desc">Buy units of a commodity. Price is paid immediately. You profit if you sell when the price is higher.</span></div>
+      <div class="help-row"><span class="help-tag r">SELL</span><span class="help-desc">Sell units you currently hold at the current market price.</span></div>
+      <div class="help-row"><span class="help-tag y">SHORT</span><span class="help-desc">Bet that the price will DROP. You lock up collateral equal to the full position value. Profit = (entry price − current price) × qty when you cover.</span></div>
+      <div class="help-row"><span class="help-tag o">COVER</span><span class="help-desc">Close your short position and collect profit or take the loss. If price went down you win, if it went up you lose.</span></div>
+      <div class="help-row"><span class="help-tag">PRICES</span><span class="help-desc">All prices update every 5 minutes. Everyone sees the same prices at the same time.</span></div>
+    </div>
+    <div class="help-section">
+      <h3>⚡ PRICE MANIPULATION</h3>
+      <div class="help-row"><span class="help-tag p">PUMP</span><span class="help-desc">Spend CR to artificially raise a commodity's price by 10–100% for 5 minutes. Good for pumping something you already hold.</span></div>
+      <div class="help-row"><span class="help-tag p">DUMP</span><span class="help-desc">Spend CR to crash a commodity's price. Good if you have a short position open on it.</span></div>
+      <div class="help-row"><span class="help-tag">COST</span><span class="help-desc">10% = 1,000 CR · 25% = 3,000 CR · 50% = 7,000 CR · 100% = 15,000 CR</span></div>
+    </div>
+    <div class="help-section">
+      <h3>⚔️ HOSTILE TAKEOVER (RAID)</h3>
+      <div class="help-row"><span class="help-tag r">RAID</span><span class="help-desc">Go to the RAID tab, pick a player, choose which commodity and how many units to steal. Pay 500 CR fee and launch.</span></div>
+      <div class="help-row"><span class="help-tag g">INTERCEPT</span><span class="help-desc">If someone raids you, a red alarm overlay appears. You have 20 seconds to tap INTERCEPT — if you do, you keep your shares AND get the attacker's 500 CR fee.</span></div>
+      <div class="help-row"><span class="help-tag r">FAIL</span><span class="help-desc">If you miss the 20 seconds, the shares transfer to the attacker automatically.</span></div>
+      <div class="help-row"><span class="help-tag">NOTIF</span><span class="help-desc">You get one phone notification when a raid starts (iPhone: add to home screen via Safari first).</span></div>
+    </div>
+    <div class="help-section">
+      <h3>🏆 LEADERBOARD</h3>
+      <div class="help-row"><span class="help-tag">RANK</span><span class="help-desc">Ranked by total net worth = wallet CR + value of all holdings + short P&L.</span></div>
     </div>
   </div>
 </div>
@@ -561,7 +624,7 @@ function startPriceTick() {
 // ══════════════════════════════════
 function switchTab(tab) {
   activeTab=tab;
-  const tabs=['market','portfolio','chat','leaderboard'];
+  const tabs=['market','portfolio','chat','leaderboard','raid'];
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',tabs[i]===tab));
   tabs.forEach(t=>{ document.getElementById('tab-'+t).style.display=t===tab?'':'none'; });
   if(tab==='chat') initChat();
@@ -573,7 +636,75 @@ function renderCurrentTab() {
   if(activeTab==='market')      renderMarket();
   if(activeTab==='portfolio')   renderPortfolio();
   if(activeTab==='leaderboard') renderLeaderboard();
+  if(activeTab==='raid')        renderRaid();
 }
+
+function openHelp()  { document.getElementById('help-overlay').classList.add('open'); }
+function closeHelp() { document.getElementById('help-overlay').classList.remove('open'); }
+window.openHelp  = openHelp;
+window.closeHelp = closeHelp;
+
+async function renderRaid() {
+  const el = document.getElementById('raid-list');
+  if (!el) return;
+  el.innerHTML = '<div style="color:var(--dim);text-align:center;padding:30px 0;font-size:.82em;">Loading…</div>';
+  try {
+    const snap = await get(ref(db,'users'));
+    if (!snap.exists()) { el.innerHTML='<div style="color:var(--dim);text-align:center;padding:30px 0;">No other players yet.</div>'; return; }
+    const others = Object.values(snap.val()).filter(u => u.username !== me.id);
+    const raidable = others.map(u => {
+      const held = COMMODITIES.filter(c=>(u.inventory?.[c.id]||0)>0).map(c=>({
+        c, qty: u.inventory[c.id], value: u.inventory[c.id]*(marketPrices[c.id]?.price||c.base)
+      }));
+      return { u, held };
+    }).filter(x=>x.held.length>0);
+
+    if (!raidable.length) { el.innerHTML='<div style="color:var(--dim);text-align:center;padding:30px 0;">No players holding anything to steal right now.</div>'; return; }
+
+    el.innerHTML = raidable.map(({u, held}) => `
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;margin-bottom:10px;overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);background:#1a0505;">
+        <span style="font-size:.88em;color:var(--r);font-weight:bold;">⚔️ @${u.username}</span>
+        <span style="font-size:.72em;color:var(--dim);">${held.length} commodity${held.length>1?'s':''}</span>
+      </div>
+      ${held.map(({c,qty,value})=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);">
+        <div>
+          <div style="font-size:.82em;color:var(--orange);">${c.icon} ${c.name}</div>
+          <div style="font-size:.72em;color:var(--dim);">${qty} units · ${value.toLocaleString()} CR total</div>
+        </div>
+        <button class="tb" style="border-color:var(--r);color:var(--r);font-size:.75em;" onclick="quickRaid('${u.username}','${c.id}',${qty})">⚔️ RAID ALL</button>
+      </div>`).join('')}
+    </div>`).join('');
+  } catch(e) {
+    el.innerHTML='<div style="color:var(--r);text-align:center;padding:30px 0;">Failed to load.</div>';
+  }
+}
+
+async function quickRaid(targetId, cId, maxQty) {
+  const c = COMMODITIES.find(x=>x.id===cId);
+  if ((me.balance||0) < ATTACK_FEE) { toast(`Need ${ATTACK_FEE} CR fee`,'err'); return; }
+  const invSnap = await get(ref(db,`users/${targetId}/inventory/${cId}`));
+  const held = invSnap.val()||0;
+  if (!held) { toast('Target no longer holds this','err'); renderRaid(); return; }
+  try {
+    await update(ref(db,`users/${me.id}`),{balance:(me.balance||0)-ATTACK_FEE});
+    const attackRef = push(ref(db,'attacks'));
+    await set(attackRef,{
+      attackerId:me.id, targetId, commodityId:cId,
+      commodityName:c.name, commodityIcon:c.icon,
+      qty:held, fee:ATTACK_FEE, status:'pending',
+      deadline:Date.now()+ATTACK_DURATION, createdAt:Date.now(),
+    });
+    toast(`⚔️ Raiding @${targetId}'s ${c.name} — 20 seconds…`,'warn',5000);
+    setTimeout(async()=>{
+      const aSnap=await get(attackRef);
+      if(!aSnap.exists()||aSnap.val().status!=='pending') return;
+      await resolveAttack(attackRef.key,aSnap.val(),'completed');
+    }, ATTACK_DURATION+500);
+  } catch(e) { toast('Raid failed: '+e.message,'err'); }
+}
+window.quickRaid = quickRaid;
 
 // ══════════════════════════════════
 // MARKET RENDER
