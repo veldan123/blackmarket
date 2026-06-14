@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>BLACK MARKET</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#050a05;--panel:#0c140c;--border:#1a2e1a;
+  --g:#00ff41;--y:#ffd700;--r:#ff3333;--dim:#4a7a4a;
+  --fg:#c8e6c8;--orange:#ff8c00;
+}
+body{background:var(--bg);color:var(--fg);font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden;}
+h1,h2,.title{font-family:'Orbitron',sans-serif;}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* ── AUTH ── */
+#screen-auth{align-items:center;justify-content:center;padding:24px 16px;}
+.auth-box{background:var(--panel);border:2px solid var(--g);border-radius:8px;padding:32px 24px;max-width:360px;width:100%;box-shadow:0 0 40px #00ff4122;}
+.auth-logo{text-align:center;margin-bottom:24px;}
+.auth-logo h1{color:var(--g);font-size:1.6em;text-shadow:0 0 20px var(--g);letter-spacing:.15em;}
+.auth-logo p{color:var(--dim);font-size:.75em;margin-top:4px;}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.auth-tab{flex:1;padding:8px;text-align:center;cursor:pointer;font-size:.82em;color:var(--dim);border-bottom:2px solid transparent;}
+.auth-tab.active{color:var(--g);border-bottom-color:var(--g);}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:.75em;color:var(--dim);margin-bottom:4px;}
+.field input{width:100%;background:#0a120a;border:1px solid var(--border);color:var(--fg);padding:9px 10px;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:.88em;}
+.field input:focus{outline:none;border-color:var(--g);}
+.btn{display:block;width:100%;padding:10px;background:transparent;border:1px solid var(--g);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:.88em;border-radius:4px;cursor:pointer;text-align:center;}
+.btn:hover{background:#00ff4110;}
+.btn-orange{border-color:var(--orange);color:var(--orange);}
+.btn-orange:hover{background:#ff8c0010;}
+.btn-red{border-color:var(--r);color:var(--r);}
+.btn-red:hover{background:#ff333310;}
+.btn-sm{padding:4px 10px;font-size:.76em;width:auto;}
+.auth-err{color:var(--r);font-size:.78em;min-height:18px;margin-top:6px;}
+
+/* ── MAIN APP ── */
+#screen-app{background:var(--bg);}
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;gap:6px;}
+.top-bar-left h2{font-size:.85em;color:var(--g);text-shadow:0 0 8px var(--g);}
+.top-bar-left p{font-size:.7em;color:var(--dim);}
+.top-bar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.balance-chip{background:#0a1a0a;border:1px solid var(--g);border-radius:4px;padding:4px 10px;font-size:.82em;color:var(--g);}
+.topup-chip{background:#0a1a0a;border:1px solid var(--dim);border-radius:4px;padding:4px 10px;font-size:.75em;color:var(--dim);}
+
+.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--panel);}
+.tab{flex:1;padding:10px 4px;text-align:center;cursor:pointer;font-size:.78em;color:var(--dim);border-bottom:2px solid transparent;}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange);}
+
+/* ── MARKET TAB ── */
+#tab-market{padding:10px 12px 80px;}
+.price-update-bar{font-size:.72em;color:var(--dim);text-align:right;padding:4px 0 8px;}
+.commodity-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;margin-bottom:8px;padding:10px 12px;}
+.commodity-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.commodity-name{font-size:.88em;color:var(--orange);font-weight:bold;}
+.commodity-price{font-size:1em;color:var(--g);font-weight:bold;}
+.commodity-change{font-size:.76em;font-weight:bold;margin-left:6px;}
+.up{color:var(--g);}
+.down{color:var(--r);}
+.sparkline{display:flex;gap:2px;align-items:flex-end;height:20px;margin:4px 0 8px;}
+.spark-bar{width:6px;border-radius:1px 1px 0 0;min-height:2px;}
+.commodity-bot{display:flex;gap:6px;align-items:center;}
+.held-label{font-size:.73em;color:var(--dim);flex:1;}
+.qty-input{width:56px;background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:4px 6px;border-radius:4px;font-size:.82em;text-align:center;font-family:'Share Tech Mono',monospace;}
+.trade-btn{padding:5px 12px;font-size:.75em;border-radius:4px;cursor:pointer;border:1px solid;font-family:'Share Tech Mono',monospace;background:transparent;}
+.buy-btn{border-color:var(--g);color:var(--g);}
+.buy-btn:hover{background:#00ff4115;}
+.sell-btn{border-color:var(--r);color:var(--r);}
+.sell-btn:hover{background:#ff333315;}
+.sell-btn:disabled{opacity:.3;cursor:default;}
+
+/* ── PORTFOLIO TAB ── */
+#tab-portfolio{padding:10px 12px 80px;}
+.portfolio-summary{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:12px;}
+.port-stat{display:flex;justify-content:space-between;margin-bottom:6px;font-size:.85em;}
+.port-stat:last-child{margin-bottom:0;}
+.port-label{color:var(--dim);}
+.port-val{color:var(--g);font-weight:bold;}
+.port-row{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.port-name{font-size:.83em;color:var(--orange);}
+.port-detail{font-size:.78em;color:var(--dim);}
+.port-pnl{font-size:.85em;font-weight:bold;}
+
+/* ── LEADERBOARD TAB ── */
+#tab-leaderboard{padding:10px 12px 80px;}
+.lb-row{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;}
+.lb-rank{font-size:.9em;color:var(--dim);width:24px;text-align:center;}
+.lb-rank.gold{color:var(--y);}
+.lb-rank.silver{color:#aaa;}
+.lb-rank.bronze{color:#cd7f32;}
+.lb-name{flex:1;font-size:.85em;color:var(--fg);}
+.lb-bal{font-size:.85em;color:var(--g);font-weight:bold;}
+.lb-total{font-size:.75em;color:var(--dim);}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0c1f0c;border:1px solid var(--g);color:var(--g);padding:9px 18px;border-radius:4px;font-size:.82em;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center;}
+#toast.show{opacity:1;}
+#toast.err{border-color:var(--r);color:var(--r);}
+#toast.warn{border-color:var(--y);color:var(--y);}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH SCREEN ══ -->
+<div id="screen-auth" class="screen active">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <h1>⬛ BLACK MARKET</h1>
+      <p>Underground Trading Exchange</p>
+    </div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login-btn" onclick="switchAuthTab('login')">LOGIN</div>
+      <div class="auth-tab" id="tab-reg-btn" onclick="switchAuthTab('register')">REGISTER</div>
+    </div>
+    <!-- Login -->
+    <div id="form-login">
+      <div class="field"><label>USERNAME</label><input type="text" id="login-user" placeholder="enter username..." autocomplete="off"/></div>
+      <div class="field"><label>PASSWORD</label><input type="password" id="login-pass" placeholder="enter password..."/></div>
+      <div class="auth-err" id="login-err"></div>
+      <button class="btn" onclick="doLogin()">▶ LOGIN</button>
+    </div>
+    <!-- Register -->
+    <div id="form-register" style="display:none;">
+      <div class="field"><label>USERNAME</label><input type="text" id="reg-user" placeholder="choose username..." maxlength="20" autocomplete="off"/></div>
+      <div class="field"><label>PASSWORD</label><input type="password" id="reg-pass" placeholder="choose password..."/></div>
+      <div class="auth-err" id="reg-err"></div>
+      <button class="btn" onclick="doRegister()">▶ CREATE ACCOUNT</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP SCREEN ══ -->
+<div id="screen-app" class="screen">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <h2>⬛ BLACK MARKET</h2>
+      <p id="top-username"></p>
+    </div>
+    <div class="top-bar-right">
+      <div class="balance-chip">💰 <span id="top-balance">0</span> CR</div>
+      <div class="topup-chip">+5K in <span id="topup-timer">--:--</span></div>
+      <button class="btn btn-sm btn-red" onclick="doLogout()">EXIT</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('market')">📈 MARKET</div>
+    <div class="tab" onclick="switchTab('portfolio')">💼 PORTFOLIO</div>
+    <div class="tab" onclick="switchTab('leaderboard')">🏆 RANKS</div>
+  </div>
+
+  <div id="tab-market" class="tab-content">
+    <div class="price-update-bar">Prices update every 5 min · Next: <span id="price-timer">--:--</span></div>
+    <div id="market-list"></div>
+  </div>
+  <div id="tab-portfolio" class="tab-content" style="display:none;"></div>
+  <div id="tab-leaderboard" class="tab-content" style="display:none;"></div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp }          from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getDatabase, ref, get, set, update, onValue, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyDfgiph_O4UlnvH-Xpfxa-IzeyUkIJUYiY",
+  authDomain:        "black-market-a0d1f.firebaseapp.com",
+  databaseURL:       "https://black-market-a0d1f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "black-market-a0d1f",
+  storageBucket:     "black-market-a0d1f.firebasestorage.app",
+  messagingSenderId: "358168391161",
+  appId:             "1:358168391161:web:9053d40a859e9bacdae128",
+};
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// ── COMMODITIES ──
+const COMMODITIES = [
+  { id:'creditDumps',   name:'Credit Dumps',      icon:'💳', base:200  },
+  { id:'fakeIds',       name:'Fake IDs',           icon:'🪪', base:150  },
+  { id:'corpSecrets',   name:'Corp Secrets',       icon:'🏢', base:800  },
+  { id:'cryptoKeys',    name:'Crypto Keys',        icon:'🔑', base:500  },
+  { id:'zeroDays',      name:'Zero-Day Exploits',  icon:'💣', base:2000 },
+  { id:'darkContracts', name:'Dark Contracts',     icon:'📜', base:1200 },
+  { id:'biometrics',    name:'Biometric Data',     icon:'🧬', base:650  },
+  { id:'govFiles',      name:'Gov Files',          icon:'🗃️', base:1800 },
+  { id:'ransomware',    name:'Ransomware Kits',    icon:'☣️', base:3000 },
+  { id:'vpnAccounts',   name:'VPN Accounts',       icon:'🌐', base:100  },
+];
+
+const TOPUP_AMOUNT  = 5000;
+const TOPUP_MS      = 30 * 60 * 1000;
+const PRICE_SLOT_MS = 5  * 60 * 1000;
+const START_BALANCE = 10000;
+
+// ── STATE ──
+let currentUser = null;   // { id, username, balance, inventory, lastTopup }
+let marketPrices = {};    // { id: { price, prevPrice, history } }
+let userUnsubscribe = null;
+let topupInterval   = null;
+let priceInterval   = null;
+
+// ══════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════
+let toastTimeout;
+function toast(msg, type='ok', ms=3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show' + (type==='err'?' err':type==='warn'?' warn':'');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('show'), ms);
+}
+
+// ══════════════════════════════════════════════════
+// AUTH TAB SWITCH
+// ══════════════════════════════════════════════════
+function switchAuthTab(tab) {
+  document.getElementById('form-login').style.display    = tab==='login'    ? '' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? '' : 'none';
+  document.getElementById('tab-login-btn').className = 'auth-tab' + (tab==='login' ? ' active' : '');
+  document.getElementById('tab-reg-btn').className   = 'auth-tab' + (tab==='register' ? ' active' : '');
+}
+window.switchAuthTab = switchAuthTab;
+
+// ══════════════════════════════════════════════════
+// REGISTER
+// ══════════════════════════════════════════════════
+async function doRegister() {
+  const username = document.getElementById('reg-user').value.trim().toLowerCase();
+  const password = document.getElementById('reg-pass').value;
+  const errEl    = document.getElementById('reg-err');
+  errEl.textContent = '';
+  if (!username || username.length < 3) { errEl.textContent = 'Username must be 3+ chars'; return; }
+  if (!/^[a-z0-9_]+$/.test(username))  { errEl.textContent = 'Letters, numbers, underscores only'; return; }
+  if (!password || password.length < 4) { errEl.textContent = 'Password must be 4+ chars'; return; }
+  try {
+    const snap = await get(ref(db, `users/${username}`));
+    if (snap.exists()) { errEl.textContent = 'Username already taken'; return; }
+    const now = Date.now();
+    await set(ref(db, `users/${username}`), {
+      username, password, balance: START_BALANCE,
+      lastTopup: now, inventory: {}, joinedAt: now,
+    });
+    toast('Account created! Logging in…');
+    document.getElementById('login-user').value = username;
+    document.getElementById('login-pass').value = password;
+    doLogin();
+  } catch(e) { errEl.textContent = 'Error: ' + e.message; }
+}
+window.doRegister = doRegister;
+
+// ══════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════
+async function doLogin() {
+  const username = document.getElementById('login-user').value.trim().toLowerCase();
+  const password = document.getElementById('login-pass').value;
+  const errEl    = document.getElementById('login-err');
+  errEl.textContent = '';
+  if (!username || !password) { errEl.textContent = 'Fill in all fields'; return; }
+  try {
+    const snap = await get(ref(db, `users/${username}`));
+    if (!snap.exists()) { errEl.textContent = 'User not found'; return; }
+    const data = snap.val();
+    if (data.password !== password) { errEl.textContent = 'Wrong password'; return; }
+    currentUser = { id: username, ...data };
+    document.getElementById('screen-auth').classList.remove('active');
+    document.getElementById('screen-app').classList.add('active');
+    document.getElementById('top-username').textContent = '@' + username;
+    initApp();
+  } catch(e) { errEl.textContent = 'Error: ' + e.message; }
+}
+window.doLogin = doLogin;
+
+function doLogout() {
+  if (userUnsubscribe) { userUnsubscribe(); userUnsubscribe = null; }
+  clearInterval(topupInterval);
+  clearInterval(priceInterval);
+  currentUser = null;
+  document.getElementById('screen-app').classList.remove('active');
+  document.getElementById('screen-auth').classList.add('active');
+}
+window.doLogout = doLogout;
+
+// ══════════════════════════════════════════════════
+// INIT APP
+// ══════════════════════════════════════════════════
+function initApp() {
+  subscribeUser();
+  loadMarket();
+  startPriceTimer();
+  startTopupTimer();
+}
+
+// ── Subscribe to user data (live balance, inventory) ──
+function subscribeUser() {
+  if (userUnsubscribe) userUnsubscribe();
+  userUnsubscribe = onValue(ref(db, `users/${currentUser.id}`), snap => {
+    if (!snap.exists()) return;
+    const data = snap.val();
+    currentUser = { ...currentUser, ...data };
+    document.getElementById('top-balance').textContent = (currentUser.balance || 0).toLocaleString();
+    checkTopup();
+    renderCurrentTab();
+  });
+}
+
+// ══════════════════════════════════════════════════
+// TOPUP TIMER
+// ══════════════════════════════════════════════════
+function startTopupTimer() {
+  clearInterval(topupInterval);
+  const tick = () => {
+    const last = currentUser?.lastTopup || Date.now();
+    const rem  = (last + TOPUP_MS) - Date.now();
+    const el   = document.getElementById('topup-timer');
+    if (!el) return;
+    if (rem <= 0) { el.textContent = 'NOW!'; checkTopup(); return; }
+    const m = Math.floor(rem / 60000);
+    const s = Math.floor((rem % 60000) / 1000);
+    el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  };
+  tick();
+  topupInterval = setInterval(tick, 1000);
+}
+
+async function checkTopup() {
+  if (!currentUser) return;
+  const last = currentUser.lastTopup || 0;
+  const now  = Date.now();
+  const cycles = Math.floor((now - last) / TOPUP_MS);
+  if (cycles < 1) return;
+  const bonus    = cycles * TOPUP_AMOUNT;
+  const newBal   = (currentUser.balance || 0) + bonus;
+  const newTopup = last + cycles * TOPUP_MS;
+  try {
+    await update(ref(db, `users/${currentUser.id}`), { balance: newBal, lastTopup: newTopup });
+    toast(`+${bonus.toLocaleString()} CR — top-up!`, 'ok');
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════
+// MARKET PRICES (time-slot deterministic + Firebase)
+// ══════════════════════════════════════════════════
+function priceForSlot(commodity, slotSeed) {
+  // Deterministic pseudo-random from slot + commodity id
+  let hash = slotSeed;
+  for (let i = 0; i < commodity.id.length; i++) hash = ((hash << 5) - hash + commodity.id.charCodeAt(i)) | 0;
+  // Two iterations for smoother walk
+  const r = ((hash >>> 0) % 10000) / 10000; // 0..1
+  return Math.round(commodity.base * (0.4 + r * 3.2)); // 40% to 360% of base
+}
+
+function computePrices() {
+  const now  = Date.now();
+  const slot = Math.floor(now / PRICE_SLOT_MS);
+  const prev = slot - 1;
+  const prices = {};
+  for (const c of COMMODITIES) {
+    const price     = priceForSlot(c, slot);
+    const prevPrice = priceForSlot(c, prev);
+    // Build history from last 10 slots
+    const history = [];
+    for (let i = 9; i >= 0; i--) history.push(priceForSlot(c, slot - i));
+    prices[c.id] = { price, prevPrice, history };
+  }
+  return prices;
+}
+
+function loadMarket() {
+  marketPrices = computePrices();
+  renderMarket();
+}
+
+function startPriceTimer() {
+  clearInterval(priceInterval);
+  const tick = () => {
+    const now  = Date.now();
+    const slot = Math.floor(now / PRICE_SLOT_MS);
+    const nextSlotAt = (slot + 1) * PRICE_SLOT_MS;
+    const rem  = nextSlotAt - now;
+    const el   = document.getElementById('price-timer');
+    if (el) {
+      const m = Math.floor(rem / 60000);
+      const s = Math.floor((rem % 60000) / 1000);
+      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+    // Refresh prices if slot changed
+    const newPrices = computePrices();
+    const anyChanged = COMMODITIES.some(c => newPrices[c.id].price !== marketPrices[c.id]?.price);
+    if (anyChanged) {
+      marketPrices = newPrices;
+      renderMarket();
+    }
+  };
+  tick();
+  priceInterval = setInterval(tick, 1000);
+}
+
+// ══════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════
+let activeTab = 'market';
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', ['market','portfolio','leaderboard'][i] === tab);
+  });
+  document.getElementById('tab-market').style.display      = tab==='market'      ? '' : 'none';
+  document.getElementById('tab-portfolio').style.display   = tab==='portfolio'   ? '' : 'none';
+  document.getElementById('tab-leaderboard').style.display = tab==='leaderboard' ? '' : 'none';
+  renderCurrentTab();
+}
+window.switchTab = switchTab;
+
+function renderCurrentTab() {
+  if (activeTab === 'market')      renderMarket();
+  if (activeTab === 'portfolio')   renderPortfolio();
+  if (activeTab === 'leaderboard') renderLeaderboard();
+}
+
+// ══════════════════════════════════════════════════
+// RENDER MARKET
+// ══════════════════════════════════════════════════
+function renderMarket() {
+  const list = document.getElementById('market-list');
+  if (!list) return;
+  list.innerHTML = COMMODITIES.map(c => {
+    const p   = marketPrices[c.id] || { price: c.base, prevPrice: c.base, history: [c.base] };
+    const pct = p.prevPrice ? ((p.price - p.prevPrice) / p.prevPrice * 100).toFixed(1) : '0.0';
+    const up  = p.price >= p.prevPrice;
+    const qty = currentUser?.inventory?.[c.id] || 0;
+    const hist = (p.history || [p.price]).slice(-10);
+    const maxH = Math.max(...hist), minH = Math.min(...hist), range = maxH - minH || 1;
+    const bars = hist.map((v,i) => {
+      const h   = Math.max(2, Math.round(((v - minH) / range) * 18));
+      const col = v >= (hist[i-1] ?? v) ? 'var(--g)' : 'var(--r)';
+      return `<div class="spark-bar" style="height:${h}px;background:${col};"></div>`;
+    }).join('');
+    return `
+    <div class="commodity-card">
+      <div class="commodity-top">
+        <span class="commodity-name">${c.icon} ${c.name}</span>
+        <span>
+          <span class="commodity-price">${p.price.toLocaleString()} CR</span>
+          <span class="commodity-change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(pct)}%</span>
+        </span>
+      </div>
+      <div class="sparkline">${bars}</div>
+      <div class="commodity-bot">
+        <span class="held-label">Held: <b>${qty}</b></span>
+        <input class="qty-input" type="number" min="1" value="1" id="qty-${c.id}"/>
+        <button class="trade-btn buy-btn"  onclick="marketBuy('${c.id}')">BUY</button>
+        <button class="trade-btn sell-btn" onclick="marketSell('${c.id}')" ${qty===0?'disabled':''}>SELL</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+// BUY / SELL
+// ══════════════════════════════════════════════════
+async function marketBuy(cId) {
+  const c     = COMMODITIES.find(x => x.id === cId);
+  const qty   = parseInt(document.getElementById('qty-' + cId)?.value) || 1;
+  const price = marketPrices[cId]?.price || c.base;
+  const total = price * qty;
+  const bal   = currentUser.balance || 0;
+  if (bal < total) { toast(`Need ${total.toLocaleString()} CR — only have ${bal.toLocaleString()} CR`, 'err'); return; }
+  try {
+    const newBal = bal - total;
+    const newQty = (currentUser.inventory?.[cId] || 0) + qty;
+    await update(ref(db, `users/${currentUser.id}`), {
+      balance: newBal,
+      [`inventory/${cId}`]: newQty,
+    });
+    toast(`Bought ${qty}× ${c.name} for ${total.toLocaleString()} CR`, 'ok');
+  } catch(e) { toast('Buy failed: ' + e.message, 'err'); }
+}
+window.marketBuy = marketBuy;
+
+async function marketSell(cId) {
+  const c     = COMMODITIES.find(x => x.id === cId);
+  const qty   = parseInt(document.getElementById('qty-' + cId)?.value) || 1;
+  const held  = currentUser.inventory?.[cId] || 0;
+  if (held < qty) { toast(`Only holding ${held}, can't sell ${qty}`, 'err'); return; }
+  const price = marketPrices[cId]?.price || c.base;
+  const total = price * qty;
+  try {
+    const newBal = (currentUser.balance || 0) + total;
+    const newQty = held - qty;
+    await update(ref(db, `users/${currentUser.id}`), {
+      balance: newBal,
+      [`inventory/${cId}`]: newQty || null,
+    });
+    toast(`Sold ${qty}× ${c.name} for ${total.toLocaleString()} CR`, 'ok');
+  } catch(e) { toast('Sell failed: ' + e.message, 'err'); }
+}
+window.marketSell = marketSell;
+
+// ══════════════════════════════════════════════════
+// RENDER PORTFOLIO
+// ══════════════════════════════════════════════════
+function renderPortfolio() {
+  const el  = document.getElementById('tab-portfolio');
+  const inv = currentUser?.inventory || {};
+  const bal = currentUser?.balance || 0;
+
+  let portVal = 0;
+  const held = COMMODITIES.filter(c => (inv[c.id] || 0) > 0).map(c => {
+    const qty   = inv[c.id];
+    const price = marketPrices[c.id]?.price || c.base;
+    const val   = qty * price;
+    portVal += val;
+    return { c, qty, price, val };
+  });
+
+  const totalNet = bal + portVal;
+
+  let html = `
+  <div class="portfolio-summary">
+    <div class="port-stat"><span class="port-label">WALLET</span><span class="port-val">${bal.toLocaleString()} CR</span></div>
+    <div class="port-stat"><span class="port-label">PORTFOLIO VALUE</span><span class="port-val">${portVal.toLocaleString()} CR</span></div>
+    <div class="port-stat"><span class="port-label">TOTAL NET WORTH</span><span class="port-val">${totalNet.toLocaleString()} CR</span></div>
+  </div>`;
+
+  if (held.length === 0) {
+    html += `<div style="color:var(--dim);text-align:center;padding:40px 0;font-size:.85em;">No holdings yet. Go buy something.</div>`;
+  } else {
+    html += held.map(({ c, qty, price, val }) => {
+      const prevPrice = marketPrices[c.id]?.prevPrice || c.base;
+      const pct = ((price - prevPrice) / prevPrice * 100).toFixed(1);
+      const up  = price >= prevPrice;
+      return `
+      <div class="port-row">
+        <div>
+          <div class="port-name">${c.icon} ${c.name}</div>
+          <div class="port-detail">${qty} units × ${price.toLocaleString()} CR</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="port-pnl ${up?'up':'down'}">${val.toLocaleString()} CR</div>
+          <div class="port-detail ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(pct)}%</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════
+// RENDER LEADERBOARD
+// ══════════════════════════════════════════════════
+async function renderLeaderboard() {
+  const el = document.getElementById('tab-leaderboard');
+  el.innerHTML = `<div style="color:var(--dim);text-align:center;padding:30px 0;font-size:.82em;">Loading…</div>`;
+  try {
+    const snap = await get(ref(db, 'users'));
+    if (!snap.exists()) { el.innerHTML = '<div style="color:var(--dim);text-align:center;padding:30px 0;">No players yet.</div>'; return; }
+    const users = snap.val();
+    const ranked = Object.values(users).map(u => {
+      let portVal = 0;
+      const inv = u.inventory || {};
+      for (const c of COMMODITIES) portVal += (inv[c.id] || 0) * (marketPrices[c.id]?.price || c.base);
+      return { username: u.username, balance: u.balance || 0, total: (u.balance || 0) + portVal };
+    }).sort((a, b) => b.total - a.total);
+
+    const rankIcons = ['gold','silver','bronze'];
+    el.innerHTML = ranked.map((u, i) => `
+    <div class="lb-row" ${u.username === currentUser?.id ? 'style="border-color:var(--g);"' : ''}>
+      <div class="lb-rank ${rankIcons[i] || ''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
+      <div class="lb-name">${u.username}${u.username===currentUser?.id?' ◀ YOU':''}</div>
+      <div style="text-align:right;">
+        <div class="lb-bal">${u.total.toLocaleString()} CR</div>
+        <div class="lb-total">wallet: ${u.balance.toLocaleString()}</div>
+      </div>
+    </div>`).join('');
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--r);text-align:center;padding:30px 0;">Failed to load.</div>`;
+  }
+}
+
+// Enter key support on auth inputs
+document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+document.getElementById('reg-pass').addEventListener('keydown',   e => { if (e.key==='Enter') doRegister(); });
+</script>
+</body>
+</html>
