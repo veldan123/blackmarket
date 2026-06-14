@@ -62,8 +62,29 @@ h1,h2{font-family:'Orbitron',sans-serif;}
 .manip-badge{font-size:.68em;padding:2px 6px;border-radius:3px;margin-left:6px;font-weight:bold;}
 .manip-pump{background:#2a0060;color:var(--purple);border:1px solid var(--purple);}
 .manip-dump{background:#300010;color:#ff55aa;border:1px solid #ff55aa;}
-.sparkline{display:flex;gap:2px;align-items:flex-end;height:20px;margin:4px 0 8px;}
-.spark-bar{width:6px;border-radius:1px 1px 0 0;min-height:2px;}
+.sparkline{display:flex;gap:2px;align-items:flex-end;height:36px;margin:4px 0 8px;cursor:pointer;}
+.spark-bar{flex:1;border-radius:1px 1px 0 0;min-height:2px;}
+
+/* FULL CHART OVERLAY */
+#chart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.98);z-index:600;flex-direction:column;}
+#chart-overlay.open{display:flex;}
+.chart-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.chart-title{font-family:'Orbitron',sans-serif;font-size:.95em;color:var(--orange);}
+.chart-meta{display:flex;gap:16px;padding:10px 16px;flex-shrink:0;flex-wrap:wrap;}
+.chart-stat{font-size:.78em;}
+.chart-stat span{display:block;color:var(--dim);font-size:.85em;}
+#chart-canvas{flex:1;display:block;width:100%;padding:0 8px 8px;}
+.chart-buy-line-label{font-size:.72em;color:var(--y);padding:0 16px 8px;flex-shrink:0;}
+
+/* PLAYERS TAB */
+#tab-players{padding:10px 12px 80px;overflow-y:auto;}
+.player-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;margin-bottom:10px;overflow:hidden;}
+.player-card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#0a1a0a;border-bottom:1px solid var(--border);}
+.player-card-name{font-size:.88em;color:var(--g);font-weight:bold;}
+.player-card-worth{font-size:.78em;color:var(--dim);}
+.player-holding-row{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid #0d1a0d;font-size:.8em;}
+.player-holding-row:last-child{border-bottom:none;}
+.player-nothing{padding:10px 12px;font-size:.78em;color:var(--dim);}
 .c-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
 .held-label{font-size:.7em;color:var(--dim);flex:1;min-width:60px;}
 .qty-in{width:50px;background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:4px 5px;border-radius:4px;font-size:.8em;text-align:center;font-family:'Share Tech Mono',monospace;}
@@ -245,6 +266,7 @@ h1,h2{font-family:'Orbitron',sans-serif;}
     <div class="tab" onclick="switchTab('chat')">💬 CHAT</div>
     <div class="tab" onclick="switchTab('leaderboard')">🏆 RANKS</div>
     <div class="tab" onclick="switchTab('raid')">⚔️ RAID</div>
+    <div class="tab" onclick="switchTab('players')">👥 PLAYERS</div>
   </div>
 
   <div id="tab-market"><div class="price-bar">Prices update every 5 min · Next: <span id="price-timer">--:--</span></div><div id="market-list"></div></div>
@@ -257,6 +279,7 @@ h1,h2{font-family:'Orbitron',sans-serif;}
     </div>
   </div>
   <div id="tab-leaderboard" style="display:none;"></div>
+  <div id="tab-players" style="display:none;"></div>
   <div id="tab-raid" style="display:none;padding:10px 12px 80px;overflow-y:auto;">
     <div style="font-size:.72em;color:var(--dim);margin-bottom:10px;">Select a player to raid their holdings. You have 20 seconds once launched. Fee: 500 CR (lost if intercepted).</div>
     <div id="raid-list"></div>
@@ -278,6 +301,22 @@ h1,h2{font-family:'Orbitron',sans-serif;}
       <button style="border:1px solid var(--purple);color:var(--purple);" onclick="confirmManip()">EXECUTE</button>
     </div>
   </div>
+</div>
+
+<!-- FULL CHART OVERLAY -->
+<div id="chart-overlay">
+  <div class="chart-header">
+    <div class="chart-title" id="chart-title"></div>
+    <button class="btn btn-sm btn-red" onclick="closeChart()">✕ CLOSE</button>
+  </div>
+  <div class="chart-meta">
+    <div class="chart-stat"><span>PRICE</span><b id="chart-price" style="color:var(--g)"></b></div>
+    <div class="chart-stat"><span>24H HIGH</span><b id="chart-high" style="color:var(--g)"></b></div>
+    <div class="chart-stat"><span>24H LOW</span><b id="chart-low" style="color:var(--r)"></b></div>
+    <div class="chart-stat"><span>CHANGE</span><b id="chart-change"></b></div>
+  </div>
+  <div class="chart-buy-line-label" id="chart-buy-label"></div>
+  <canvas id="chart-canvas"></canvas>
 </div>
 
 <!-- HELP OVERLAY -->
@@ -624,7 +663,7 @@ function startPriceTick() {
 // ══════════════════════════════════
 function switchTab(tab) {
   activeTab=tab;
-  const tabs=['market','portfolio','chat','leaderboard','raid'];
+  const tabs=['market','portfolio','chat','leaderboard','raid','players'];
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',tabs[i]===tab));
   tabs.forEach(t=>{ document.getElementById('tab-'+t).style.display=t===tab?'':'none'; });
   if(tab==='chat') initChat();
@@ -637,6 +676,161 @@ function renderCurrentTab() {
   if(activeTab==='portfolio')   renderPortfolio();
   if(activeTab==='leaderboard') renderLeaderboard();
   if(activeTab==='raid')        renderRaid();
+  if(activeTab==='players')     renderPlayers();
+}
+
+// ══════════════════════════════════
+// FULL CHART
+// ══════════════════════════════════
+function openChart(cId) {
+  const c = COMMODITIES.find(x=>x.id===cId);
+  const now = Date.now(), slot = Math.floor(now/PRICE_SLOT);
+  // Build 60 points of history (last 60 minutes)
+  const pts = Array.from({length:60},(_,i)=>slotPrice(c, slot-59+i));
+  // Apply manip to last point
+  const manip = marketPrices[cId]?.manip;
+  if(manip && manip.expiresAt>now){
+    const factor = manip.dir==='pump'?1+(manip.pct/100):1-(manip.pct/100);
+    pts[pts.length-1]=Math.max(1,Math.round(pts[pts.length-1]*factor));
+  }
+  const cur=pts[pts.length-1], first=pts[0];
+  const hi=Math.max(...pts), lo=Math.min(...pts);
+  const chg=cur-first, chgPct=((chg/first)*100).toFixed(1);
+  const avgCost=me?.avgCost?.[cId]||0;
+
+  document.getElementById('chart-title').textContent  = `${c.icon} ${c.name}`;
+  document.getElementById('chart-price').textContent  = cur.toLocaleString()+' CR';
+  document.getElementById('chart-high').textContent   = hi.toLocaleString()+' CR';
+  document.getElementById('chart-low').textContent    = lo.toLocaleString()+' CR';
+  const chgEl = document.getElementById('chart-change');
+  chgEl.textContent = `${chg>=0?'+':''}${chg.toLocaleString()} CR (${chg>=0?'+':''}${chgPct}%)`;
+  chgEl.style.color = chg>=0?'var(--g)':'var(--r)';
+
+  const buyLabel = document.getElementById('chart-buy-label');
+  if(avgCost && me?.inventory?.[cId]>0){
+    const pnl=(cur-avgCost)*(me.inventory[cId]);
+    buyLabel.textContent = `Your avg buy: ${avgCost.toLocaleString()} CR · Total P&L if sold now: ${pnl>=0?'+':''}${pnl.toLocaleString()} CR`;
+    buyLabel.style.color = pnl>=0?'var(--g)':'var(--r)';
+  } else {
+    buyLabel.textContent='';
+  }
+
+  document.getElementById('chart-overlay').classList.add('open');
+
+  // Draw after layout
+  requestAnimationFrame(()=>drawChart(pts, avgCost && me?.inventory?.[cId]>0 ? avgCost : null));
+}
+window.openChart = openChart;
+
+function closeChart() {
+  document.getElementById('chart-overlay').classList.remove('open');
+}
+window.closeChart = closeChart;
+
+function drawChart(pts, avgCostLine) {
+  const canvas = document.getElementById('chart-canvas');
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  canvas.width=W; canvas.height=H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const PAD={top:20,right:16,bottom:32,left:64};
+  const cW=W-PAD.left-PAD.right, cH=H-PAD.top-PAD.bottom;
+  const mn=Math.min(...pts), mx=Math.max(...pts), rng=mx-mn||1;
+
+  const xOf=i=>(i/(pts.length-1))*cW+PAD.left;
+  const yOf=v=>PAD.top+cH-(((v-mn)/rng)*cH);
+
+  // Grid lines
+  ctx.strokeStyle='#1a2e1a'; ctx.lineWidth=1;
+  for(let g=0;g<=4;g++){
+    const y=PAD.top+g*(cH/4);
+    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(W-PAD.right,y); ctx.stroke();
+    const val=Math.round(mx-(g/4)*rng);
+    ctx.fillStyle='#4a7a4a'; ctx.font='10px Share Tech Mono';
+    ctx.textAlign='right'; ctx.fillText(val.toLocaleString(),PAD.left-6,y+4);
+  }
+  // Time labels
+  ctx.fillStyle='#4a7a4a'; ctx.font='10px Share Tech Mono'; ctx.textAlign='center';
+  [0,15,30,45,59].forEach(i=>{
+    const label=`-${59-i}m`;
+    ctx.fillText(label,xOf(i),H-PAD.bottom+14);
+  });
+
+  // Gradient fill
+  const grad=ctx.createLinearGradient(0,PAD.top,0,H-PAD.bottom);
+  const rising=pts[pts.length-1]>=pts[0];
+  grad.addColorStop(0, rising?'#00ff4130':'#ff333330');
+  grad.addColorStop(1,'transparent');
+  ctx.beginPath();
+  pts.forEach((v,i)=>i===0?ctx.moveTo(xOf(i),yOf(v)):ctx.lineTo(xOf(i),yOf(v)));
+  ctx.lineTo(xOf(pts.length-1),H-PAD.bottom);
+  ctx.lineTo(xOf(0),H-PAD.bottom);
+  ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+
+  // Line
+  ctx.beginPath(); ctx.lineWidth=2.5;
+  ctx.strokeStyle=rising?'#00ff41':'#ff3333';
+  pts.forEach((v,i)=>i===0?ctx.moveTo(xOf(i),yOf(v)):ctx.lineTo(xOf(i),yOf(v)));
+  ctx.stroke();
+
+  // Avg cost line
+  if(avgCostLine){
+    const y=yOf(avgCostLine);
+    ctx.setLineDash([6,4]); ctx.lineWidth=1.5; ctx.strokeStyle='#ffd700';
+    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(W-PAD.right,y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#ffd700'; ctx.font='10px Share Tech Mono'; ctx.textAlign='right';
+    ctx.fillText('avg buy',W-PAD.right-4,y-4);
+  }
+
+  // Current price dot
+  const lx=xOf(pts.length-1), ly=yOf(pts[pts.length-1]);
+  ctx.beginPath(); ctx.arc(lx,ly,5,0,Math.PI*2);
+  ctx.fillStyle=rising?'#00ff41':'#ff3333'; ctx.fill();
+}
+
+// ══════════════════════════════════
+// PLAYERS TAB
+// ══════════════════════════════════
+async function renderPlayers() {
+  const el=document.getElementById('tab-players');
+  el.innerHTML='<div style="color:var(--dim);text-align:center;padding:30px 0;font-size:.82em;">Loading…</div>';
+  try{
+    const snap=await get(ref(db,'users'));
+    if(!snap.exists()){el.innerHTML='<div style="color:var(--dim);text-align:center;padding:30px 0;">No players yet.</div>';return;}
+    const players=Object.values(snap.val()).filter(u=>u.username!==me.id);
+    if(!players.length){el.innerHTML='<div style="color:var(--dim);text-align:center;padding:30px 0;">No other players yet.</div>';return;}
+
+    el.innerHTML='<div style="padding:10px 12px 80px;">'+players.map(u=>{
+      let portVal=0;
+      for(const c of COMMODITIES) portVal+=(u.inventory?.[c.id]||0)*(marketPrices[c.id]?.price||c.base);
+      const net=(u.balance||0)+portVal;
+      const held=COMMODITIES.filter(c=>(u.inventory?.[c.id]||0)>0);
+      return `
+      <div class="player-card">
+        <div class="player-card-header">
+          <span class="player-card-name">@${u.username}</span>
+          <span class="player-card-worth">Net worth: ${net.toLocaleString()} CR</span>
+        </div>
+        ${held.length?held.map(c=>{
+          const qty=u.inventory[c.id];
+          const price=marketPrices[c.id]?.price||c.base;
+          const val=qty*price;
+          const prev=marketPrices[c.id]?.prevPrice||c.base;
+          const up=price>=prev;
+          return `<div class="player-holding-row">
+            <span style="color:var(--orange);">${c.icon} ${c.name}</span>
+            <span style="color:var(--dim);">${qty} units</span>
+            <span style="color:var(--g);">${val.toLocaleString()} CR</span>
+            <span class="${up?'up':'down'}" style="font-size:.75em;">${up?'▲':'▼'}</span>
+          </div>`;
+        }).join(''):`<div class="player-nothing">Nothing held right now</div>`}
+      </div>`;
+    }).join('')+'</div>';
+  }catch(e){
+    el.innerHTML='<div style="color:var(--r);text-align:center;padding:30px 0;">Failed to load.</div>';
+  }
 }
 
 function openHelp()  { document.getElementById('help-overlay').classList.add('open'); }
@@ -741,7 +935,7 @@ function renderMarket() {
         <span><span class="c-price">${p.price.toLocaleString()} CR</span><span class="c-pct ${up?'up':'down'}">${up?'▲':'▼'}${Math.abs(pct)}%</span></span>
       </div>
       ${manipBadge}
-      <div class="sparkline">${bars}</div>
+      <div class="sparkline" onclick="openChart('${c.id}')" title="Tap for full chart">${bars}</div>
       <div class="c-actions">
         <span class="held-label">Held: <b>${inv}</b></span>
         <input class="qty-in" type="number" min="1" value="1" id="qty-${c.id}"/>
