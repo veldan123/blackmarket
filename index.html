@@ -4,27 +4,20 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <title>BLACK MARKET</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#050a05;--panel:#0c140c;--border:#1a2e1a;
-  --g:#00ff41;--y:#ffd700;--r:#ff3333;--dim:#4a7a4a;
-  --fg:#c8e6c8;--orange:#ff8c00;
-}
+:root{--bg:#050a05;--panel:#0c140c;--border:#1a2e1a;--g:#00ff41;--y:#ffd700;--r:#ff3333;--dim:#4a7a4a;--fg:#c8e6c8;--orange:#ff8c00;--purple:#bf5fff;}
 body{background:var(--bg);color:var(--fg);font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden;}
-h1,h2,.title{font-family:'Orbitron',sans-serif;}
-
-/* ── SCREENS ── */
+h1,h2{font-family:'Orbitron',sans-serif;}
 .screen{display:none;min-height:100vh;}
 .screen.active{display:flex;flex-direction:column;}
 
-/* ── AUTH ── */
+/* AUTH */
 #screen-auth{align-items:center;justify-content:center;padding:24px 16px;}
 .auth-box{background:var(--panel);border:2px solid var(--g);border-radius:8px;padding:32px 24px;max-width:360px;width:100%;box-shadow:0 0 40px #00ff4122;}
 .auth-logo{text-align:center;margin-bottom:24px;}
-.auth-logo h1{color:var(--g);font-size:1.6em;text-shadow:0 0 20px var(--g);letter-spacing:.15em;}
+.auth-logo h1{color:var(--g);font-size:1.5em;text-shadow:0 0 20px var(--g);letter-spacing:.15em;}
 .auth-logo p{color:var(--dim);font-size:.75em;margin-top:4px;}
 .auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
 .auth-tab{flex:1;padding:8px;text-align:center;cursor:pointer;font-size:.82em;color:var(--dim);border-bottom:2px solid transparent;}
@@ -35,85 +28,130 @@ h1,h2,.title{font-family:'Orbitron',sans-serif;}
 .field input:focus{outline:none;border-color:var(--g);}
 .btn{display:block;width:100%;padding:10px;background:transparent;border:1px solid var(--g);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:.88em;border-radius:4px;cursor:pointer;text-align:center;}
 .btn:hover{background:#00ff4110;}
-.btn-orange{border-color:var(--orange);color:var(--orange);}
-.btn-orange:hover{background:#ff8c0010;}
+.btn-sm{padding:4px 10px;font-size:.76em;width:auto;display:inline-block;}
 .btn-red{border-color:var(--r);color:var(--r);}
-.btn-red:hover{background:#ff333310;}
-.btn-sm{padding:4px 10px;font-size:.76em;width:auto;}
+.btn-red:hover{background:#ff333315;}
 .auth-err{color:var(--r);font-size:.78em;min-height:18px;margin-top:6px;}
 
-/* ── MAIN APP ── */
+/* TOP BAR */
 #screen-app{background:var(--bg);}
 .top-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;gap:6px;}
 .top-bar-left h2{font-size:.85em;color:var(--g);text-shadow:0 0 8px var(--g);}
 .top-bar-left p{font-size:.7em;color:var(--dim);}
-.top-bar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-.balance-chip{background:#0a1a0a;border:1px solid var(--g);border-radius:4px;padding:4px 10px;font-size:.82em;color:var(--g);}
-.topup-chip{background:#0a1a0a;border:1px solid var(--dim);border-radius:4px;padding:4px 10px;font-size:.75em;color:var(--dim);}
+.top-bar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.chip{background:#0a1a0a;border:1px solid var(--border);border-radius:4px;padding:4px 10px;font-size:.78em;}
+.chip-g{border-color:var(--g);color:var(--g);}
+.chip-dim{color:var(--dim);}
 
-.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--panel);}
-.tab{flex:1;padding:10px 4px;text-align:center;cursor:pointer;font-size:.78em;color:var(--dim);border-bottom:2px solid transparent;}
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--panel);overflow-x:auto;}
+.tab{flex:1;min-width:64px;padding:10px 4px;text-align:center;cursor:pointer;font-size:.72em;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap;}
 .tab.active{color:var(--orange);border-bottom-color:var(--orange);}
 
-/* ── MARKET TAB ── */
-#tab-market{padding:10px 12px 80px;}
-.price-update-bar{font-size:.72em;color:var(--dim);text-align:right;padding:4px 0 8px;}
-.commodity-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;margin-bottom:8px;padding:10px 12px;}
-.commodity-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.commodity-name{font-size:.88em;color:var(--orange);font-weight:bold;}
-.commodity-price{font-size:1em;color:var(--g);font-weight:bold;}
-.commodity-change{font-size:.76em;font-weight:bold;margin-left:6px;}
+/* MARKET */
+#tab-market{padding:8px 12px 80px;overflow-y:auto;}
+.price-bar{font-size:.7em;color:var(--dim);text-align:right;padding:4px 0 8px;}
+.c-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;margin-bottom:8px;padding:10px 12px;}
+.c-card.maniped{border-color:var(--purple);}
+.c-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;}
+.c-name{font-size:.85em;color:var(--orange);font-weight:bold;}
+.c-price{font-size:.98em;color:var(--g);font-weight:bold;}
+.c-pct{font-size:.74em;font-weight:bold;margin-left:5px;}
 .up{color:var(--g);}
 .down{color:var(--r);}
+.manip-badge{font-size:.68em;padding:2px 6px;border-radius:3px;margin-left:6px;font-weight:bold;}
+.manip-pump{background:#2a0060;color:var(--purple);border:1px solid var(--purple);}
+.manip-dump{background:#300010;color:#ff55aa;border:1px solid #ff55aa;}
 .sparkline{display:flex;gap:2px;align-items:flex-end;height:20px;margin:4px 0 8px;}
 .spark-bar{width:6px;border-radius:1px 1px 0 0;min-height:2px;}
-.commodity-bot{display:flex;gap:6px;align-items:center;}
-.held-label{font-size:.73em;color:var(--dim);flex:1;}
-.qty-input{width:56px;background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:4px 6px;border-radius:4px;font-size:.82em;text-align:center;font-family:'Share Tech Mono',monospace;}
-.trade-btn{padding:5px 12px;font-size:.75em;border-radius:4px;cursor:pointer;border:1px solid;font-family:'Share Tech Mono',monospace;background:transparent;}
-.buy-btn{border-color:var(--g);color:var(--g);}
-.buy-btn:hover{background:#00ff4115;}
-.sell-btn{border-color:var(--r);color:var(--r);}
-.sell-btn:hover{background:#ff333315;}
-.sell-btn:disabled{opacity:.3;cursor:default;}
+.c-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+.held-label{font-size:.7em;color:var(--dim);flex:1;min-width:60px;}
+.qty-in{width:50px;background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:4px 5px;border-radius:4px;font-size:.8em;text-align:center;font-family:'Share Tech Mono',monospace;}
+.tb{padding:5px 9px;font-size:.72em;border-radius:4px;cursor:pointer;border:1px solid;font-family:'Share Tech Mono',monospace;background:transparent;white-space:nowrap;}
+.tb-buy{border-color:var(--g);color:var(--g);}
+.tb-buy:hover{background:#00ff4115;}
+.tb-sell{border-color:var(--r);color:var(--r);}
+.tb-sell:hover{background:#ff333315;}
+.tb-short{border-color:var(--y);color:var(--y);}
+.tb-short:hover{background:#ffd70015;}
+.tb-cover{border-color:#ff9900;color:#ff9900;}
+.tb-cover:hover{background:#ff990015;}
+.tb-pump{border-color:var(--purple);color:var(--purple);}
+.tb-pump:hover{background:#bf5fff15;}
+.tb-dump{border-color:#ff55aa;color:#ff55aa;}
+.tb-dump:hover{background:#ff55aa15;}
+.tb:disabled{opacity:.3;cursor:default;}
+.manip-row{margin-top:7px;padding-top:7px;border-top:1px solid var(--border);display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+.manip-label{font-size:.68em;color:var(--dim);flex:1;}
+.manip-info{font-size:.68em;color:var(--purple);margin-top:4px;}
+.short-info{font-size:.68em;color:var(--y);margin-top:3px;}
 
-/* ── PORTFOLIO TAB ── */
-#tab-portfolio{padding:10px 12px 80px;}
-.portfolio-summary{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:12px;}
-.port-stat{display:flex;justify-content:space-between;margin-bottom:6px;font-size:.85em;}
+/* PORTFOLIO */
+#tab-portfolio{padding:10px 12px 80px;overflow-y:auto;}
+.port-summary{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:12px;}
+.port-stat{display:flex;justify-content:space-between;margin-bottom:6px;font-size:.83em;}
 .port-stat:last-child{margin-bottom:0;}
 .port-label{color:var(--dim);}
 .port-val{color:var(--g);font-weight:bold;}
 .port-row{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
 .port-name{font-size:.83em;color:var(--orange);}
-.port-detail{font-size:.78em;color:var(--dim);}
+.port-detail{font-size:.75em;color:var(--dim);}
 .port-pnl{font-size:.85em;font-weight:bold;}
+.section-hdr{font-size:.72em;color:var(--dim);margin:12px 0 6px;border-bottom:1px solid var(--border);padding-bottom:4px;}
 
-/* ── LEADERBOARD TAB ── */
-#tab-leaderboard{padding:10px 12px 80px;}
+/* CHAT */
+#tab-chat{display:flex;flex-direction:column;height:calc(100vh - 110px);}
+.chat-messages{flex:1;overflow-y:auto;padding:10px 12px;}
+.chat-msg{margin-bottom:8px;}
+.chat-meta{font-size:.68em;color:var(--dim);margin-bottom:2px;}
+.chat-meta .chat-author{color:var(--orange);}
+.chat-bubble{background:var(--panel);border:1px solid var(--border);border-radius:0 6px 6px 6px;padding:7px 10px;font-size:.82em;display:inline-block;max-width:85%;word-break:break-word;}
+.chat-bubble.mine{border-color:var(--g);color:var(--g);}
+.chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--panel);flex-shrink:0;}
+.chat-in{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:8px 10px;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:.85em;}
+.chat-in:focus{outline:none;border-color:var(--g);}
+.chat-send{padding:8px 14px;background:transparent;border:1px solid var(--g);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:.82em;border-radius:4px;cursor:pointer;}
+.chat-send:hover{background:#00ff4110;}
+
+/* LEADERBOARD */
+#tab-leaderboard{padding:10px 12px 80px;overflow-y:auto;}
 .lb-row{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;}
-.lb-rank{font-size:.9em;color:var(--dim);width:24px;text-align:center;}
-.lb-rank.gold{color:var(--y);}
-.lb-rank.silver{color:#aaa;}
-.lb-rank.bronze{color:#cd7f32;}
-.lb-name{flex:1;font-size:.85em;color:var(--fg);}
-.lb-bal{font-size:.85em;color:var(--g);font-weight:bold;}
-.lb-total{font-size:.75em;color:var(--dim);}
+.lb-rank{font-size:.88em;color:var(--dim);width:28px;text-align:center;}
+.lb-name{flex:1;font-size:.83em;}
+.lb-bal{font-size:.83em;color:var(--g);font-weight:bold;}
+.lb-sub{font-size:.7em;color:var(--dim);}
 
-/* ── TOAST ── */
+/* MANIP MODAL */
+#manip-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:center;justify-content:center;}
+#manip-modal.open{display:flex;}
+.manip-box{background:var(--panel);border:2px solid var(--purple);border-radius:8px;padding:24px;max-width:320px;width:93%;}
+.manip-box h2{font-family:'Orbitron',sans-serif;color:var(--purple);font-size:.95em;margin-bottom:4px;}
+.manip-box p{font-size:.78em;color:var(--dim);margin-bottom:16px;}
+.manip-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.manip-opt{padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:4px;cursor:pointer;text-align:center;font-size:.8em;}
+.manip-opt:hover{border-color:var(--purple);}
+.manip-opt.selected{border-color:var(--purple);background:#2a0060;}
+.manip-opt .opt-pct{color:var(--purple);font-weight:bold;font-size:1.1em;}
+.manip-opt .opt-cost{color:var(--dim);font-size:.85em;margin-top:2px;}
+.manip-dir{display:flex;gap:8px;margin-bottom:14px;}
+.dir-btn{flex:1;padding:8px;background:transparent;border:1px solid var(--border);border-radius:4px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.8em;}
+.dir-btn.pump.sel{border-color:var(--purple);color:var(--purple);background:#2a0060;}
+.dir-btn.dump.sel{border-color:#ff55aa;color:#ff55aa;background:#300010;}
+.manip-actions{display:flex;gap:8px;}
+.manip-actions button{flex:1;padding:8px;border-radius:4px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.8em;background:transparent;}
+
+/* TOAST */
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0c1f0c;border:1px solid var(--g);color:var(--g);padding:9px 18px;border-radius:4px;font-size:.82em;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center;}
 #toast.show{opacity:1;}
 #toast.err{border-color:var(--r);color:var(--r);}
 #toast.warn{border-color:var(--y);color:var(--y);}
-
-/* scrollbar */
 ::-webkit-scrollbar{width:4px;background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 </style>
 </head>
 <body>
 
-<!-- ══ AUTH SCREEN ══ -->
+<!-- AUTH -->
 <div id="screen-auth" class="screen active">
   <div class="auth-box">
     <div class="auth-logo">
@@ -121,17 +159,15 @@ h1,h2,.title{font-family:'Orbitron',sans-serif;}
       <p>Underground Trading Exchange</p>
     </div>
     <div class="auth-tabs">
-      <div class="auth-tab active" id="tab-login-btn" onclick="switchAuthTab('login')">LOGIN</div>
-      <div class="auth-tab" id="tab-reg-btn" onclick="switchAuthTab('register')">REGISTER</div>
+      <div class="auth-tab active" onclick="switchAuthTab('login')">LOGIN</div>
+      <div class="auth-tab" onclick="switchAuthTab('register')">REGISTER</div>
     </div>
-    <!-- Login -->
     <div id="form-login">
-      <div class="field"><label>USERNAME</label><input type="text" id="login-user" placeholder="enter username..." autocomplete="off"/></div>
-      <div class="field"><label>PASSWORD</label><input type="password" id="login-pass" placeholder="enter password..."/></div>
+      <div class="field"><label>USERNAME</label><input type="text" id="login-user" placeholder="username..." autocomplete="off"/></div>
+      <div class="field"><label>PASSWORD</label><input type="password" id="login-pass" placeholder="password..."/></div>
       <div class="auth-err" id="login-err"></div>
       <button class="btn" onclick="doLogin()">▶ LOGIN</button>
     </div>
-    <!-- Register -->
     <div id="form-register" style="display:none;">
       <div class="field"><label>USERNAME</label><input type="text" id="reg-user" placeholder="choose username..." maxlength="20" autocomplete="off"/></div>
       <div class="field"><label>PASSWORD</label><input type="password" id="reg-pass" placeholder="choose password..."/></div>
@@ -141,7 +177,7 @@ h1,h2,.title{font-family:'Orbitron',sans-serif;}
   </div>
 </div>
 
-<!-- ══ MAIN APP SCREEN ══ -->
+<!-- MAIN APP -->
 <div id="screen-app" class="screen">
   <div class="top-bar">
     <div class="top-bar-left">
@@ -149,453 +185,586 @@ h1,h2,.title{font-family:'Orbitron',sans-serif;}
       <p id="top-username"></p>
     </div>
     <div class="top-bar-right">
-      <div class="balance-chip">💰 <span id="top-balance">0</span> CR</div>
-      <div class="topup-chip">+5K in <span id="topup-timer">--:--</span></div>
+      <div class="chip chip-g">💰 <span id="top-balance">0</span> CR</div>
+      <div class="chip chip-dim">+5K in <span id="topup-timer">--:--</span></div>
       <button class="btn btn-sm btn-red" onclick="doLogout()">EXIT</button>
     </div>
   </div>
   <div class="tabs">
     <div class="tab active" onclick="switchTab('market')">📈 MARKET</div>
     <div class="tab" onclick="switchTab('portfolio')">💼 PORTFOLIO</div>
+    <div class="tab" onclick="switchTab('chat')">💬 CHAT</div>
     <div class="tab" onclick="switchTab('leaderboard')">🏆 RANKS</div>
   </div>
 
-  <div id="tab-market" class="tab-content">
-    <div class="price-update-bar">Prices update every 5 min · Next: <span id="price-timer">--:--</span></div>
-    <div id="market-list"></div>
+  <div id="tab-market"><div class="price-bar">Prices update every 5 min · Next: <span id="price-timer">--:--</span></div><div id="market-list"></div></div>
+  <div id="tab-portfolio" style="display:none;"></div>
+  <div id="tab-chat" style="display:none;">
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input-row">
+      <input class="chat-in" id="chat-input" placeholder="type a message..." maxlength="200"/>
+      <button class="chat-send" onclick="sendChat()">SEND</button>
+    </div>
   </div>
-  <div id="tab-portfolio" class="tab-content" style="display:none;"></div>
-  <div id="tab-leaderboard" class="tab-content" style="display:none;"></div>
+  <div id="tab-leaderboard" style="display:none;"></div>
+</div>
+
+<!-- MANIPULATION MODAL -->
+<div id="manip-modal">
+  <div class="manip-box">
+    <h2>⚡ PRICE MANIPULATION</h2>
+    <p id="manip-subtitle">Move the market. Expires in 5 minutes.</p>
+    <div class="manip-dir">
+      <button class="dir-btn pump" id="dir-pump" onclick="selectDir('pump')">🟣 PUMP ▲</button>
+      <button class="dir-btn dump" id="dir-dump" onclick="selectDir('dump')">🩷 DUMP ▼</button>
+    </div>
+    <div class="manip-opts" id="manip-opts"></div>
+    <div class="manip-actions">
+      <button style="border:1px solid var(--r);color:var(--r);" onclick="closeManipModal()">CANCEL</button>
+      <button style="border:1px solid var(--purple);color:var(--purple);" onclick="confirmManip()">EXECUTE</button>
+    </div>
+  </div>
 </div>
 
 <div id="toast"></div>
 
 <script type="module">
-import { initializeApp }          from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getDatabase, ref, get, set, update, onValue, serverTimestamp }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getDatabase, ref, get, set, update, push, onValue, remove, query, orderByChild, limitToLast }
   from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey:            "AIzaSyDfgiph_O4UlnvH-Xpfxa-IzeyUkIJUYiY",
-  authDomain:        "black-market-a0d1f.firebaseapp.com",
-  databaseURL:       "https://black-market-a0d1f-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:         "black-market-a0d1f",
-  storageBucket:     "black-market-a0d1f.firebasestorage.app",
-  messagingSenderId: "358168391161",
-  appId:             "1:358168391161:web:9053d40a859e9bacdae128",
-};
-const app = initializeApp(firebaseConfig);
-const db  = getDatabase(app);
+const app = initializeApp({
+  apiKey:"AIzaSyDfgiph_O4UlnvH-Xpfxa-IzeyUkIJUYiY",
+  authDomain:"black-market-a0d1f.firebaseapp.com",
+  databaseURL:"https://black-market-a0d1f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"black-market-a0d1f",
+  storageBucket:"black-market-a0d1f.firebasestorage.app",
+  messagingSenderId:"358168391161",
+  appId:"1:358168391161:web:9053d40a859e9bacdae128",
+});
+const db = getDatabase(app);
 
-// ── COMMODITIES ──
 const COMMODITIES = [
-  { id:'creditDumps',   name:'Credit Dumps',      icon:'💳', base:200  },
-  { id:'fakeIds',       name:'Fake IDs',           icon:'🪪', base:150  },
-  { id:'corpSecrets',   name:'Corp Secrets',       icon:'🏢', base:800  },
-  { id:'cryptoKeys',    name:'Crypto Keys',        icon:'🔑', base:500  },
-  { id:'zeroDays',      name:'Zero-Day Exploits',  icon:'💣', base:2000 },
-  { id:'darkContracts', name:'Dark Contracts',     icon:'📜', base:1200 },
-  { id:'biometrics',    name:'Biometric Data',     icon:'🧬', base:650  },
-  { id:'govFiles',      name:'Gov Files',          icon:'🗃️', base:1800 },
-  { id:'ransomware',    name:'Ransomware Kits',    icon:'☣️', base:3000 },
-  { id:'vpnAccounts',   name:'VPN Accounts',       icon:'🌐', base:100  },
+  {id:'creditDumps',  name:'Credit Dumps',     icon:'💳',base:200 },
+  {id:'fakeIds',      name:'Fake IDs',          icon:'🪪',base:150 },
+  {id:'corpSecrets',  name:'Corp Secrets',      icon:'🏢',base:800 },
+  {id:'cryptoKeys',   name:'Crypto Keys',       icon:'🔑',base:500 },
+  {id:'zeroDays',     name:'Zero-Day Exploits', icon:'💣',base:2000},
+  {id:'darkContracts',name:'Dark Contracts',    icon:'📜',base:1200},
+  {id:'biometrics',   name:'Biometric Data',    icon:'🧬',base:650 },
+  {id:'govFiles',     name:'Gov Files',         icon:'🗃️',base:1800},
+  {id:'ransomware',   name:'Ransomware Kits',   icon:'☣️',base:3000},
+  {id:'vpnAccounts',  name:'VPN Accounts',      icon:'🌐',base:100 },
 ];
 
-const TOPUP_AMOUNT  = 5000;
-const TOPUP_MS      = 30 * 60 * 1000;
-const PRICE_SLOT_MS = 5  * 60 * 1000;
-const START_BALANCE = 10000;
+const MANIP_TIERS = [
+  {pct:10, cost:1000},
+  {pct:25, cost:3000},
+  {pct:50, cost:7000},
+  {pct:100,cost:15000},
+];
+const MANIP_DURATION = 5 * 60 * 1000;
+const TOPUP_MS    = 30 * 60 * 1000;
+const TOPUP_AMT   = 5000;
+const PRICE_SLOT  = 5  * 60 * 1000;
+const START_BAL   = 10000;
+const MAX_CHAT    = 80;
 
-// ── STATE ──
-let currentUser = null;   // { id, username, balance, inventory, lastTopup }
-let marketPrices = {};    // { id: { price, prevPrice, history } }
-let userUnsubscribe = null;
-let topupInterval   = null;
-let priceInterval   = null;
+let me = null;
+let marketPrices = {};
+let manipData    = {};
+let chatUnsub    = null;
+let userUnsub    = null;
+let manipUnsub   = null;
+let topupTick    = null;
+let priceTick    = null;
+let activeTab    = 'market';
 
-// ══════════════════════════════════════════════════
+// ── MANIP MODAL STATE ──
+let manipTarget = null;
+let manipDir    = 'pump';
+let manipTier   = 0;
+
+// ══════════════════════════════════
 // TOAST
-// ══════════════════════════════════════════════════
-let toastTimeout;
+// ══════════════════════════════════
+let toastTmo;
 function toast(msg, type='ok', ms=3000) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.className = 'show' + (type==='err'?' err':type==='warn'?' warn':'');
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => el.classList.remove('show'), ms);
+  clearTimeout(toastTmo);
+  toastTmo = setTimeout(()=>el.classList.remove('show'), ms);
 }
 
-// ══════════════════════════════════════════════════
-// AUTH TAB SWITCH
-// ══════════════════════════════════════════════════
+// ══════════════════════════════════
+// AUTH
+// ══════════════════════════════════
 function switchAuthTab(tab) {
-  document.getElementById('form-login').style.display    = tab==='login'    ? '' : 'none';
-  document.getElementById('form-register').style.display = tab==='register' ? '' : 'none';
-  document.getElementById('tab-login-btn').className = 'auth-tab' + (tab==='login' ? ' active' : '');
-  document.getElementById('tab-reg-btn').className   = 'auth-tab' + (tab==='register' ? ' active' : '');
+  document.getElementById('form-login').style.display    = tab==='login'    ?'':'none';
+  document.getElementById('form-register').style.display = tab==='register' ?'':'none';
+  document.querySelectorAll('.auth-tab').forEach((el,i)=>el.classList.toggle('active',['login','register'][i]===tab));
 }
 window.switchAuthTab = switchAuthTab;
 
-// ══════════════════════════════════════════════════
-// REGISTER
-// ══════════════════════════════════════════════════
 async function doRegister() {
-  const username = document.getElementById('reg-user').value.trim().toLowerCase();
-  const password = document.getElementById('reg-pass').value;
-  const errEl    = document.getElementById('reg-err');
-  errEl.textContent = '';
-  if (!username || username.length < 3) { errEl.textContent = 'Username must be 3+ chars'; return; }
-  if (!/^[a-z0-9_]+$/.test(username))  { errEl.textContent = 'Letters, numbers, underscores only'; return; }
-  if (!password || password.length < 4) { errEl.textContent = 'Password must be 4+ chars'; return; }
-  try {
-    const snap = await get(ref(db, `users/${username}`));
-    if (snap.exists()) { errEl.textContent = 'Username already taken'; return; }
-    const now = Date.now();
-    await set(ref(db, `users/${username}`), {
-      username, password, balance: START_BALANCE,
-      lastTopup: now, inventory: {}, joinedAt: now,
-    });
-    toast('Account created! Logging in…');
-    document.getElementById('login-user').value = username;
-    document.getElementById('login-pass').value = password;
+  const u = document.getElementById('reg-user').value.trim().toLowerCase();
+  const p = document.getElementById('reg-pass').value;
+  const e = document.getElementById('reg-err');
+  e.textContent='';
+  if(u.length<3)                {e.textContent='Username 3+ chars';return;}
+  if(!/^[a-z0-9_]+$/.test(u))  {e.textContent='Letters/numbers/_ only';return;}
+  if(p.length<4)                {e.textContent='Password 4+ chars';return;}
+  try{
+    if((await get(ref(db,`users/${u}`))).exists()){e.textContent='Username taken';return;}
+    await set(ref(db,`users/${u}`),{username:u,password:p,balance:START_BAL,lastTopup:Date.now(),inventory:{},shorts:{},joinedAt:Date.now()});
+    document.getElementById('login-user').value=u;
+    document.getElementById('login-pass').value=p;
     doLogin();
-  } catch(e) { errEl.textContent = 'Error: ' + e.message; }
+  }catch(err){e.textContent='Error: '+err.message;}
 }
 window.doRegister = doRegister;
 
-// ══════════════════════════════════════════════════
-// LOGIN
-// ══════════════════════════════════════════════════
 async function doLogin() {
-  const username = document.getElementById('login-user').value.trim().toLowerCase();
-  const password = document.getElementById('login-pass').value;
-  const errEl    = document.getElementById('login-err');
-  errEl.textContent = '';
-  if (!username || !password) { errEl.textContent = 'Fill in all fields'; return; }
-  try {
-    const snap = await get(ref(db, `users/${username}`));
-    if (!snap.exists()) { errEl.textContent = 'User not found'; return; }
-    const data = snap.val();
-    if (data.password !== password) { errEl.textContent = 'Wrong password'; return; }
-    currentUser = { id: username, ...data };
+  const u = document.getElementById('login-user').value.trim().toLowerCase();
+  const p = document.getElementById('login-pass').value;
+  const e = document.getElementById('login-err');
+  e.textContent='';
+  if(!u||!p){e.textContent='Fill all fields';return;}
+  try{
+    const snap=await get(ref(db,`users/${u}`));
+    if(!snap.exists()){e.textContent='User not found';return;}
+    const d=snap.val();
+    if(d.password!==p){e.textContent='Wrong password';return;}
+    me={id:u,...d};
     document.getElementById('screen-auth').classList.remove('active');
     document.getElementById('screen-app').classList.add('active');
-    document.getElementById('top-username').textContent = '@' + username;
+    document.getElementById('top-username').textContent='@'+u;
     initApp();
-  } catch(e) { errEl.textContent = 'Error: ' + e.message; }
+  }catch(err){e.textContent='Error: '+err.message;}
 }
 window.doLogin = doLogin;
 
 function doLogout() {
-  if (userUnsubscribe) { userUnsubscribe(); userUnsubscribe = null; }
-  clearInterval(topupInterval);
-  clearInterval(priceInterval);
-  currentUser = null;
+  [chatUnsub,userUnsub,manipUnsub].forEach(f=>f&&f());
+  chatUnsub=userUnsub=manipUnsub=null;
+  clearInterval(topupTick); clearInterval(priceTick);
+  me=null;
   document.getElementById('screen-app').classList.remove('active');
   document.getElementById('screen-auth').classList.add('active');
 }
 window.doLogout = doLogout;
 
-// ══════════════════════════════════════════════════
-// INIT APP
-// ══════════════════════════════════════════════════
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
 function initApp() {
   subscribeUser();
-  loadMarket();
-  startPriceTimer();
-  startTopupTimer();
+  subscribeManip();
+  loadPrices();
+  startPriceTick();
+  startTopupTick();
+  switchTab('market');
 }
 
-// ── Subscribe to user data (live balance, inventory) ──
 function subscribeUser() {
-  if (userUnsubscribe) userUnsubscribe();
-  userUnsubscribe = onValue(ref(db, `users/${currentUser.id}`), snap => {
-    if (!snap.exists()) return;
-    const data = snap.val();
-    currentUser = { ...currentUser, ...data };
-    document.getElementById('top-balance').textContent = (currentUser.balance || 0).toLocaleString();
+  if(userUnsub) userUnsub();
+  userUnsub = onValue(ref(db,`users/${me.id}`), snap=>{
+    if(!snap.exists()) return;
+    me={...me,...snap.val()};
+    document.getElementById('top-balance').textContent=(me.balance||0).toLocaleString();
     checkTopup();
     renderCurrentTab();
   });
 }
 
-// ══════════════════════════════════════════════════
-// TOPUP TIMER
-// ══════════════════════════════════════════════════
-function startTopupTimer() {
-  clearInterval(topupInterval);
-  const tick = () => {
-    const last = currentUser?.lastTopup || Date.now();
-    const rem  = (last + TOPUP_MS) - Date.now();
-    const el   = document.getElementById('topup-timer');
-    if (!el) return;
-    if (rem <= 0) { el.textContent = 'NOW!'; checkTopup(); return; }
-    const m = Math.floor(rem / 60000);
-    const s = Math.floor((rem % 60000) / 1000);
-    el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+function subscribeManip() {
+  if(manipUnsub) manipUnsub();
+  manipUnsub = onValue(ref(db,'manip'), snap=>{
+    manipData = snap.val() || {};
+    // Prune expired on client
+    const now=Date.now();
+    for(const [k,v] of Object.entries(manipData)){
+      if(v.expiresAt < now) delete manipData[k];
+    }
+    loadPrices();
+    renderCurrentTab();
+  });
+}
+
+// ══════════════════════════════════
+// TOPUP
+// ══════════════════════════════════
+function startTopupTick() {
+  clearInterval(topupTick);
+  const tick=()=>{
+    const rem=(me?.lastTopup||0)+TOPUP_MS-Date.now();
+    const el=document.getElementById('topup-timer');
+    if(el) el.textContent=rem<=0?'NOW!':`${String(Math.floor(rem/60000)).padStart(2,'0')}:${String(Math.floor((rem%60000)/1000)).padStart(2,'0')}`;
   };
-  tick();
-  topupInterval = setInterval(tick, 1000);
+  tick(); topupTick=setInterval(tick,1000);
 }
 
 async function checkTopup() {
-  if (!currentUser) return;
-  const last = currentUser.lastTopup || 0;
-  const now  = Date.now();
-  const cycles = Math.floor((now - last) / TOPUP_MS);
-  if (cycles < 1) return;
-  const bonus    = cycles * TOPUP_AMOUNT;
-  const newBal   = (currentUser.balance || 0) + bonus;
-  const newTopup = last + cycles * TOPUP_MS;
-  try {
-    await update(ref(db, `users/${currentUser.id}`), { balance: newBal, lastTopup: newTopup });
-    toast(`+${bonus.toLocaleString()} CR — top-up!`, 'ok');
-  } catch(e) {}
+  if(!me) return;
+  const cycles=Math.floor((Date.now()-(me.lastTopup||0))/TOPUP_MS);
+  if(cycles<1) return;
+  const bonus=cycles*TOPUP_AMT;
+  const newBal=(me.balance||0)+bonus;
+  const newLast=(me.lastTopup||0)+cycles*TOPUP_MS;
+  try{
+    await update(ref(db,`users/${me.id}`),{balance:newBal,lastTopup:newLast});
+    toast(`+${bonus.toLocaleString()} CR top-up!`,'ok');
+  }catch(e){}
 }
 
-// ══════════════════════════════════════════════════
-// MARKET PRICES (time-slot deterministic + Firebase)
-// ══════════════════════════════════════════════════
-function priceForSlot(commodity, slotSeed) {
-  // Deterministic pseudo-random from slot + commodity id
-  let hash = slotSeed;
-  for (let i = 0; i < commodity.id.length; i++) hash = ((hash << 5) - hash + commodity.id.charCodeAt(i)) | 0;
-  // Two iterations for smoother walk
-  const r = ((hash >>> 0) % 10000) / 10000; // 0..1
-  return Math.round(commodity.base * (0.4 + r * 3.2)); // 40% to 360% of base
+// ══════════════════════════════════
+// PRICES
+// ══════════════════════════════════
+function slotPrice(c, slot) {
+  let h=slot;
+  for(let i=0;i<c.id.length;i++) h=((h<<5)-h+c.id.charCodeAt(i))|0;
+  const r=((h>>>0)%10000)/10000;
+  return Math.max(10, Math.round(c.base*(0.4+r*3.2)));
 }
 
-function computePrices() {
-  const now  = Date.now();
-  const slot = Math.floor(now / PRICE_SLOT_MS);
-  const prev = slot - 1;
-  const prices = {};
-  for (const c of COMMODITIES) {
-    const price     = priceForSlot(c, slot);
-    const prevPrice = priceForSlot(c, prev);
-    // Build history from last 10 slots
-    const history = [];
-    for (let i = 9; i >= 0; i--) history.push(priceForSlot(c, slot - i));
-    prices[c.id] = { price, prevPrice, history };
+function loadPrices() {
+  const now=Date.now(), slot=Math.floor(now/PRICE_SLOT);
+  const newP={};
+  for(const c of COMMODITIES){
+    const base   = slotPrice(c, slot);
+    const prev   = slotPrice(c, slot-1);
+    const history= Array.from({length:10},(_,i)=>slotPrice(c,slot-9+i));
+    // Apply manipulation overlay
+    const manip  = manipData[c.id];
+    let price = base;
+    if(manip && manip.expiresAt > now){
+      const factor = manip.dir==='pump' ? 1+(manip.pct/100) : 1-(manip.pct/100);
+      price = Math.max(1, Math.round(base * factor));
+    }
+    newP[c.id]={price, prevPrice:prev, history, manip: manip && manip.expiresAt>now ? manip : null};
   }
-  return prices;
+  marketPrices=newP;
 }
 
-function loadMarket() {
-  marketPrices = computePrices();
-  renderMarket();
-}
-
-function startPriceTimer() {
-  clearInterval(priceInterval);
-  const tick = () => {
-    const now  = Date.now();
-    const slot = Math.floor(now / PRICE_SLOT_MS);
-    const nextSlotAt = (slot + 1) * PRICE_SLOT_MS;
-    const rem  = nextSlotAt - now;
-    const el   = document.getElementById('price-timer');
-    if (el) {
-      const m = Math.floor(rem / 60000);
-      const s = Math.floor((rem % 60000) / 1000);
-      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    }
-    // Refresh prices if slot changed
-    const newPrices = computePrices();
-    const anyChanged = COMMODITIES.some(c => newPrices[c.id].price !== marketPrices[c.id]?.price);
-    if (anyChanged) {
-      marketPrices = newPrices;
-      renderMarket();
-    }
+function startPriceTick() {
+  clearInterval(priceTick);
+  const tick=()=>{
+    const now=Date.now(), slot=Math.floor(now/PRICE_SLOT);
+    const nextAt=(slot+1)*PRICE_SLOT, rem=nextAt-now;
+    const el=document.getElementById('price-timer');
+    if(el) el.textContent=`${String(Math.floor(rem/60000)).padStart(2,'0')}:${String(Math.floor((rem%60000)/1000)).padStart(2,'0')}`;
+    const newSlot=Math.floor(now/PRICE_SLOT);
+    if(newSlot !== Math.floor((now-1000)/PRICE_SLOT)){ loadPrices(); renderCurrentTab(); }
   };
-  tick();
-  priceInterval = setInterval(tick, 1000);
+  tick(); priceTick=setInterval(tick,1000);
 }
 
-// ══════════════════════════════════════════════════
-// TAB SWITCHING
-// ══════════════════════════════════════════════════
-let activeTab = 'market';
+// ══════════════════════════════════
+// TAB
+// ══════════════════════════════════
 function switchTab(tab) {
-  activeTab = tab;
-  document.querySelectorAll('.tab').forEach((el, i) => {
-    el.classList.toggle('active', ['market','portfolio','leaderboard'][i] === tab);
-  });
-  document.getElementById('tab-market').style.display      = tab==='market'      ? '' : 'none';
-  document.getElementById('tab-portfolio').style.display   = tab==='portfolio'   ? '' : 'none';
-  document.getElementById('tab-leaderboard').style.display = tab==='leaderboard' ? '' : 'none';
+  activeTab=tab;
+  const tabs=['market','portfolio','chat','leaderboard'];
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',tabs[i]===tab));
+  tabs.forEach(t=>{ document.getElementById('tab-'+t).style.display=t===tab?'':'none'; });
+  if(tab==='chat') initChat();
   renderCurrentTab();
 }
 window.switchTab = switchTab;
 
 function renderCurrentTab() {
-  if (activeTab === 'market')      renderMarket();
-  if (activeTab === 'portfolio')   renderPortfolio();
-  if (activeTab === 'leaderboard') renderLeaderboard();
+  if(activeTab==='market')      renderMarket();
+  if(activeTab==='portfolio')   renderPortfolio();
+  if(activeTab==='leaderboard') renderLeaderboard();
 }
 
-// ══════════════════════════════════════════════════
-// RENDER MARKET
-// ══════════════════════════════════════════════════
+// ══════════════════════════════════
+// MARKET RENDER
+// ══════════════════════════════════
 function renderMarket() {
-  const list = document.getElementById('market-list');
-  if (!list) return;
-  list.innerHTML = COMMODITIES.map(c => {
-    const p   = marketPrices[c.id] || { price: c.base, prevPrice: c.base, history: [c.base] };
-    const pct = p.prevPrice ? ((p.price - p.prevPrice) / p.prevPrice * 100).toFixed(1) : '0.0';
-    const up  = p.price >= p.prevPrice;
-    const qty = currentUser?.inventory?.[c.id] || 0;
-    const hist = (p.history || [p.price]).slice(-10);
-    const maxH = Math.max(...hist), minH = Math.min(...hist), range = maxH - minH || 1;
-    const bars = hist.map((v,i) => {
-      const h   = Math.max(2, Math.round(((v - minH) / range) * 18));
-      const col = v >= (hist[i-1] ?? v) ? 'var(--g)' : 'var(--r)';
+  const list=document.getElementById('market-list');
+  if(!list) return;
+  list.innerHTML=COMMODITIES.map(c=>{
+    const p   = marketPrices[c.id]||{price:c.base,prevPrice:c.base,history:[c.base],manip:null};
+    const pct = p.prevPrice?((p.price-p.prevPrice)/p.prevPrice*100).toFixed(1):'0.0';
+    const up  = p.price>=p.prevPrice;
+    const inv = me?.inventory?.[c.id]||0;
+    const short= me?.shorts?.[c.id]||null;
+    const hist = (p.history||[p.price]).slice(-10);
+    const mx=Math.max(...hist),mn=Math.min(...hist),rng=mx-mn||1;
+    const bars=hist.map((v,i)=>{
+      const h=Math.max(2,Math.round(((v-mn)/rng)*18));
+      const col=v>=(hist[i-1]??v)?'var(--g)':'var(--r)';
       return `<div class="spark-bar" style="height:${h}px;background:${col};"></div>`;
     }).join('');
+
+    const manipBadge = p.manip
+      ? `<span class="manip-badge ${p.manip.dir==='pump'?'manip-pump':'manip-dump'}">${p.manip.dir==='pump'?'🟣 PUMPED':'🩷 DUMPED'} +${p.manip.pct}% by @${p.manip.by}</span>`
+      : '';
+
+    const shortInfo = short
+      ? `<div class="short-info">⚡ SHORT: ${short.qty} units @ ${short.entryPrice.toLocaleString()} CR · P&L: <span class="${(short.entryPrice-p.price)*short.qty>=0?'up':'down'}">${((short.entryPrice-p.price)*short.qty>=0?'+':'')}${((short.entryPrice-p.price)*short.qty).toLocaleString()} CR</span></div>`
+      : '';
+
     return `
-    <div class="commodity-card">
-      <div class="commodity-top">
-        <span class="commodity-name">${c.icon} ${c.name}</span>
-        <span>
-          <span class="commodity-price">${p.price.toLocaleString()} CR</span>
-          <span class="commodity-change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(pct)}%</span>
-        </span>
+    <div class="c-card${p.manip?' maniped':''}">
+      <div class="c-top">
+        <span class="c-name">${c.icon} ${c.name}</span>
+        <span><span class="c-price">${p.price.toLocaleString()} CR</span><span class="c-pct ${up?'up':'down'}">${up?'▲':'▼'}${Math.abs(pct)}%</span></span>
       </div>
+      ${manipBadge}
       <div class="sparkline">${bars}</div>
-      <div class="commodity-bot">
-        <span class="held-label">Held: <b>${qty}</b></span>
-        <input class="qty-input" type="number" min="1" value="1" id="qty-${c.id}"/>
-        <button class="trade-btn buy-btn"  onclick="marketBuy('${c.id}')">BUY</button>
-        <button class="trade-btn sell-btn" onclick="marketSell('${c.id}')" ${qty===0?'disabled':''}>SELL</button>
+      <div class="c-actions">
+        <span class="held-label">Held: <b>${inv}</b></span>
+        <input class="qty-in" type="number" min="1" value="1" id="qty-${c.id}"/>
+        <button class="tb tb-buy"   onclick="mBuy('${c.id}')">BUY</button>
+        <button class="tb tb-sell"  onclick="mSell('${c.id}')" ${inv===0?'disabled':''}>SELL</button>
+        <button class="tb tb-short" onclick="mShort('${c.id}')" ${short?'disabled':''}>SHORT</button>
+        <button class="tb tb-cover" onclick="mCover('${c.id}')" ${!short?'disabled':''}>COVER</button>
       </div>
+      ${shortInfo}
+      <div class="manip-row">
+        <span class="manip-label">Price manipulation:</span>
+        <button class="tb tb-pump" onclick="openManip('${c.id}','pump')">🟣 PUMP</button>
+        <button class="tb tb-dump" onclick="openManip('${c.id}','dump')">🩷 DUMP</button>
+      </div>
+      ${p.manip?`<div class="manip-info">Active manip expires in ${Math.max(0,Math.round((p.manip.expiresAt-Date.now())/1000))}s</div>`:''}
     </div>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════════════
+// ══════════════════════════════════
 // BUY / SELL
-// ══════════════════════════════════════════════════
-async function marketBuy(cId) {
-  const c     = COMMODITIES.find(x => x.id === cId);
-  const qty   = parseInt(document.getElementById('qty-' + cId)?.value) || 1;
-  const price = marketPrices[cId]?.price || c.base;
-  const total = price * qty;
-  const bal   = currentUser.balance || 0;
-  if (bal < total) { toast(`Need ${total.toLocaleString()} CR — only have ${bal.toLocaleString()} CR`, 'err'); return; }
-  try {
-    const newBal = bal - total;
-    const newQty = (currentUser.inventory?.[cId] || 0) + qty;
-    await update(ref(db, `users/${currentUser.id}`), {
-      balance: newBal,
-      [`inventory/${cId}`]: newQty,
-    });
-    toast(`Bought ${qty}× ${c.name} for ${total.toLocaleString()} CR`, 'ok');
-  } catch(e) { toast('Buy failed: ' + e.message, 'err'); }
+// ══════════════════════════════════
+async function mBuy(cId) {
+  const c=COMMODITIES.find(x=>x.id===cId);
+  const qty=Math.max(1,parseInt(document.getElementById('qty-'+cId)?.value)||1);
+  const price=marketPrices[cId]?.price||c.base;
+  const total=price*qty, bal=me.balance||0;
+  if(bal<total){toast(`Need ${total.toLocaleString()} CR, have ${bal.toLocaleString()} CR`,'err');return;}
+  try{
+    await update(ref(db,`users/${me.id}`),{balance:bal-total,[`inventory/${cId}`]:(me.inventory?.[cId]||0)+qty});
+    toast(`Bought ${qty}× ${c.name} for ${total.toLocaleString()} CR`,'ok');
+  }catch(e){toast('Buy failed: '+e.message,'err');}
 }
-window.marketBuy = marketBuy;
+window.mBuy = mBuy;
 
-async function marketSell(cId) {
-  const c     = COMMODITIES.find(x => x.id === cId);
-  const qty   = parseInt(document.getElementById('qty-' + cId)?.value) || 1;
-  const held  = currentUser.inventory?.[cId] || 0;
-  if (held < qty) { toast(`Only holding ${held}, can't sell ${qty}`, 'err'); return; }
-  const price = marketPrices[cId]?.price || c.base;
-  const total = price * qty;
-  try {
-    const newBal = (currentUser.balance || 0) + total;
-    const newQty = held - qty;
-    await update(ref(db, `users/${currentUser.id}`), {
-      balance: newBal,
-      [`inventory/${cId}`]: newQty || null,
-    });
-    toast(`Sold ${qty}× ${c.name} for ${total.toLocaleString()} CR`, 'ok');
-  } catch(e) { toast('Sell failed: ' + e.message, 'err'); }
+async function mSell(cId) {
+  const c=COMMODITIES.find(x=>x.id===cId);
+  const qty=Math.max(1,parseInt(document.getElementById('qty-'+cId)?.value)||1);
+  const held=me.inventory?.[cId]||0;
+  if(held<qty){toast(`Only holding ${held}`,'err');return;}
+  const price=marketPrices[cId]?.price||c.base;
+  const total=price*qty;
+  const newQty=held-qty;
+  try{
+    await update(ref(db,`users/${me.id}`),{balance:(me.balance||0)+total,[`inventory/${cId}`]:newQty||null});
+    toast(`Sold ${qty}× ${c.name} for ${total.toLocaleString()} CR`,'ok');
+  }catch(e){toast('Sell failed: '+e.message,'err');}
 }
-window.marketSell = marketSell;
+window.mSell = mSell;
 
-// ══════════════════════════════════════════════════
-// RENDER PORTFOLIO
-// ══════════════════════════════════════════════════
+// ══════════════════════════════════
+// SHORT SELLING
+// ══════════════════════════════════
+async function mShort(cId) {
+  const c=COMMODITIES.find(x=>x.id===cId);
+  const qty=Math.max(1,parseInt(document.getElementById('qty-'+cId)?.value)||1);
+  const price=marketPrices[cId]?.price||c.base;
+  // Require collateral = full value (so you can cover losses)
+  const collateral=price*qty;
+  if((me.balance||0)<collateral){toast(`Need ${collateral.toLocaleString()} CR collateral`,'err');return;}
+  if(me.shorts?.[cId]){toast('Already have a short on this — cover it first','warn');return;}
+  try{
+    await update(ref(db,`users/${me.id}`),{
+      balance:(me.balance||0)-collateral,
+      [`shorts/${cId}`]:{qty,entryPrice:price,collateral,openedAt:Date.now()},
+    });
+    toast(`Shorted ${qty}× ${c.name} @ ${price.toLocaleString()} CR (collateral: ${collateral.toLocaleString()} CR)`,'warn');
+  }catch(e){toast('Short failed: '+e.message,'err');}
+}
+window.mShort = mShort;
+
+async function mCover(cId) {
+  const c=COMMODITIES.find(x=>x.id===cId);
+  const short=me.shorts?.[cId];
+  if(!short){toast('No short position on '+c.name,'err');return;}
+  const currentPrice=marketPrices[cId]?.price||c.base;
+  const pnl=(short.entryPrice-currentPrice)*short.qty;
+  const payout=short.collateral+pnl;
+  const newBal=Math.max(0,(me.balance||0)+payout);
+  try{
+    await update(ref(db,`users/${me.id}`),{balance:newBal,[`shorts/${cId}`]:null});
+    const sign=pnl>=0?'+':'';
+    toast(`Covered short · P&L: ${sign}${pnl.toLocaleString()} CR · ${pnl>=0?'PROFIT 📈':'LOSS 📉'}`,(pnl>=0?'ok':'err'),5000);
+  }catch(e){toast('Cover failed: '+e.message,'err');}
+}
+window.mCover = mCover;
+
+// ══════════════════════════════════
+// MANIPULATION
+// ══════════════════════════════════
+function openManip(cId, dir) {
+  manipTarget=cId; manipDir=dir; manipTier=0;
+  const c=COMMODITIES.find(x=>x.id===cId);
+  document.getElementById('manip-subtitle').textContent=`${c.icon} ${c.name} — move the price for 5 minutes`;
+  selectDir(dir);
+  document.getElementById('manip-opts').innerHTML=MANIP_TIERS.map((t,i)=>`
+    <div class="manip-opt${i===0?' selected':''}" onclick="selectTier(${i})">
+      <div class="opt-pct">${t.pct}%</div>
+      <div class="opt-cost">${t.cost.toLocaleString()} CR</div>
+    </div>`).join('');
+  document.getElementById('manip-modal').classList.add('open');
+}
+window.openManip = openManip;
+
+function selectDir(dir) {
+  manipDir=dir;
+  document.getElementById('dir-pump').className='dir-btn pump'+(dir==='pump'?' sel':'');
+  document.getElementById('dir-dump').className='dir-btn dump'+(dir==='dump'?' sel':'');
+}
+window.selectDir = selectDir;
+
+function selectTier(i) {
+  manipTier=i;
+  document.querySelectorAll('.manip-opt').forEach((el,j)=>el.classList.toggle('selected',j===i));
+}
+window.selectTier = selectTier;
+
+function closeManipModal() { document.getElementById('manip-modal').classList.remove('open'); }
+window.closeManipModal = closeManipModal;
+
+async function confirmManip() {
+  const tier=MANIP_TIERS[manipTier];
+  const bal=me.balance||0;
+  if(bal<tier.cost){toast(`Need ${tier.cost.toLocaleString()} CR`,'err');return;}
+  const existing=manipData[manipTarget];
+  if(existing && existing.expiresAt>Date.now()){toast('A manipulation is already active on this commodity — wait for it to expire','warn',4000);return;}
+  try{
+    await Promise.all([
+      update(ref(db,`users/${me.id}`),{balance:bal-tier.cost}),
+      set(ref(db,`manip/${manipTarget}`),{
+        dir:manipDir, pct:tier.pct, cost:tier.cost,
+        by:me.id, expiresAt:Date.now()+MANIP_DURATION,
+      }),
+    ]);
+    closeManipModal();
+    const c=COMMODITIES.find(x=>x.id===manipTarget);
+    toast(`${manipDir==='pump'?'🟣 PUMPED':'🩷 DUMPED'} ${c.name} by ${tier.pct}% for 5 min!`,'warn',5000);
+  }catch(e){toast('Manip failed: '+e.message,'err');}
+}
+window.confirmManip = confirmManip;
+
+// ══════════════════════════════════
+// PORTFOLIO
+// ══════════════════════════════════
 function renderPortfolio() {
-  const el  = document.getElementById('tab-portfolio');
-  const inv = currentUser?.inventory || {};
-  const bal = currentUser?.balance || 0;
-
-  let portVal = 0;
-  const held = COMMODITIES.filter(c => (inv[c.id] || 0) > 0).map(c => {
-    const qty   = inv[c.id];
-    const price = marketPrices[c.id]?.price || c.base;
-    const val   = qty * price;
-    portVal += val;
-    return { c, qty, price, val };
+  const el=document.getElementById('tab-portfolio');
+  const inv=me?.inventory||{}, shorts=me?.shorts||{}, bal=me?.balance||0;
+  let portVal=0, shortPnl=0;
+  const heldItems=COMMODITIES.filter(c=>(inv[c.id]||0)>0).map(c=>{
+    const qty=inv[c.id], price=marketPrices[c.id]?.price||c.base, val=qty*price;
+    portVal+=val;
+    return {c,qty,price,val};
   });
-
-  const totalNet = bal + portVal;
-
-  let html = `
-  <div class="portfolio-summary">
+  const shortItems=COMMODITIES.filter(c=>shorts[c.id]).map(c=>{
+    const s=shorts[c.id], curPrice=marketPrices[c.id]?.price||c.base, pnl=(s.entryPrice-curPrice)*s.qty;
+    shortPnl+=pnl;
+    return {c,s,curPrice,pnl};
+  });
+  const net=bal+portVal+shortPnl;
+  let html=`
+  <div class="port-summary">
     <div class="port-stat"><span class="port-label">WALLET</span><span class="port-val">${bal.toLocaleString()} CR</span></div>
-    <div class="port-stat"><span class="port-label">PORTFOLIO VALUE</span><span class="port-val">${portVal.toLocaleString()} CR</span></div>
-    <div class="port-stat"><span class="port-label">TOTAL NET WORTH</span><span class="port-val">${totalNet.toLocaleString()} CR</span></div>
+    <div class="port-stat"><span class="port-label">LONG PORTFOLIO</span><span class="port-val">${portVal.toLocaleString()} CR</span></div>
+    <div class="port-stat"><span class="port-label">SHORT P&amp;L</span><span class="port-val ${shortPnl>=0?'up':'down'}">${shortPnl>=0?'+':''}${shortPnl.toLocaleString()} CR</span></div>
+    <div class="port-stat" style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;"><span class="port-label">NET WORTH</span><span class="port-val">${net.toLocaleString()} CR</span></div>
   </div>`;
-
-  if (held.length === 0) {
-    html += `<div style="color:var(--dim);text-align:center;padding:40px 0;font-size:.85em;">No holdings yet. Go buy something.</div>`;
-  } else {
-    html += held.map(({ c, qty, price, val }) => {
-      const prevPrice = marketPrices[c.id]?.prevPrice || c.base;
-      const pct = ((price - prevPrice) / prevPrice * 100).toFixed(1);
-      const up  = price >= prevPrice;
-      return `
-      <div class="port-row">
-        <div>
-          <div class="port-name">${c.icon} ${c.name}</div>
-          <div class="port-detail">${qty} units × ${price.toLocaleString()} CR</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="port-pnl ${up?'up':'down'}">${val.toLocaleString()} CR</div>
-          <div class="port-detail ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(pct)}%</div>
-        </div>
-      </div>`;
+  if(heldItems.length){
+    html+=`<div class="section-hdr">LONG POSITIONS</div>`;
+    html+=heldItems.map(({c,qty,price,val})=>{
+      const prev=marketPrices[c.id]?.prevPrice||c.base, up=price>=prev, pct=((price-prev)/prev*100).toFixed(1);
+      return `<div class="port-row"><div><div class="port-name">${c.icon} ${c.name}</div><div class="port-detail">${qty} units × ${price.toLocaleString()} CR</div></div><div style="text-align:right;"><div class="port-pnl">${val.toLocaleString()} CR</div><div class="port-detail ${up?'up':'down'}">${up?'▲':'▼'}${Math.abs(pct)}%</div></div></div>`;
     }).join('');
   }
-  el.innerHTML = html;
-}
-
-// ══════════════════════════════════════════════════
-// RENDER LEADERBOARD
-// ══════════════════════════════════════════════════
-async function renderLeaderboard() {
-  const el = document.getElementById('tab-leaderboard');
-  el.innerHTML = `<div style="color:var(--dim);text-align:center;padding:30px 0;font-size:.82em;">Loading…</div>`;
-  try {
-    const snap = await get(ref(db, 'users'));
-    if (!snap.exists()) { el.innerHTML = '<div style="color:var(--dim);text-align:center;padding:30px 0;">No players yet.</div>'; return; }
-    const users = snap.val();
-    const ranked = Object.values(users).map(u => {
-      let portVal = 0;
-      const inv = u.inventory || {};
-      for (const c of COMMODITIES) portVal += (inv[c.id] || 0) * (marketPrices[c.id]?.price || c.base);
-      return { username: u.username, balance: u.balance || 0, total: (u.balance || 0) + portVal };
-    }).sort((a, b) => b.total - a.total);
-
-    const rankIcons = ['gold','silver','bronze'];
-    el.innerHTML = ranked.map((u, i) => `
-    <div class="lb-row" ${u.username === currentUser?.id ? 'style="border-color:var(--g);"' : ''}>
-      <div class="lb-rank ${rankIcons[i] || ''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
-      <div class="lb-name">${u.username}${u.username===currentUser?.id?' ◀ YOU':''}</div>
-      <div style="text-align:right;">
-        <div class="lb-bal">${u.total.toLocaleString()} CR</div>
-        <div class="lb-total">wallet: ${u.balance.toLocaleString()}</div>
-      </div>
+  if(shortItems.length){
+    html+=`<div class="section-hdr">SHORT POSITIONS</div>`;
+    html+=shortItems.map(({c,s,curPrice,pnl})=>`
+    <div class="port-row">
+      <div><div class="port-name">⚡ SHORT: ${c.icon} ${c.name}</div><div class="port-detail">${s.qty} units · entry ${s.entryPrice.toLocaleString()} CR · now ${curPrice.toLocaleString()} CR</div></div>
+      <div style="text-align:right;"><div class="port-pnl ${pnl>=0?'up':'down'}">${pnl>=0?'+':''}${pnl.toLocaleString()} CR</div><div class="port-detail">collateral: ${s.collateral.toLocaleString()}</div></div>
     </div>`).join('');
-  } catch(e) {
-    el.innerHTML = `<div style="color:var(--r);text-align:center;padding:30px 0;">Failed to load.</div>`;
   }
+  if(!heldItems.length&&!shortItems.length) html+=`<div style="color:var(--dim);text-align:center;padding:40px 0;font-size:.85em;">No positions open.</div>`;
+  el.innerHTML=html;
 }
 
-// Enter key support on auth inputs
-document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
-document.getElementById('reg-pass').addEventListener('keydown',   e => { if (e.key==='Enter') doRegister(); });
+// ══════════════════════════════════
+// CHAT
+// ══════════════════════════════════
+function initChat() {
+  if(chatUnsub) return;
+  const chatRef=query(ref(db,'chat'),orderByChild('ts'),limitToLast(MAX_CHAT));
+  chatUnsub=onValue(chatRef, snap=>{
+    const msgs=[];
+    snap.forEach(c=>msgs.push(c.val()));
+    const box=document.getElementById('chat-messages');
+    if(!box) return;
+    box.innerHTML=msgs.map(m=>{
+      const mine=m.uid===me.id;
+      const d=new Date(m.ts), time=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      return `<div class="chat-msg"><div class="chat-meta"><span class="chat-author">@${m.uid}</span> <span>${time}</span></div><div class="chat-bubble${mine?' mine':''}">${escHtml(m.text)}</div></div>`;
+    }).join('');
+    box.scrollTop=box.scrollHeight;
+  });
+}
+
+async function sendChat() {
+  const inp=document.getElementById('chat-input');
+  const text=inp.value.trim();
+  if(!text) return;
+  inp.value='';
+  try{
+    await push(ref(db,'chat'),{uid:me.id,text,ts:Date.now()});
+  }catch(e){toast('Send failed','err');}
+}
+window.sendChat = sendChat;
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ══════════════════════════════════
+// LEADERBOARD
+// ══════════════════════════════════
+async function renderLeaderboard() {
+  const el=document.getElementById('tab-leaderboard');
+  el.innerHTML='<div style="color:var(--dim);text-align:center;padding:30px 0;font-size:.82em;">Loading…</div>';
+  try{
+    const snap=await get(ref(db,'users'));
+    if(!snap.exists()){el.innerHTML='<div style="color:var(--dim);text-align:center;padding:30px 0;">No players.</div>';return;}
+    const ranked=Object.values(snap.val()).map(u=>{
+      let portVal=0, shortPnl=0;
+      for(const c of COMMODITIES){
+        portVal+=(u.inventory?.[c.id]||0)*(marketPrices[c.id]?.price||c.base);
+        const s=u.shorts?.[c.id];
+        if(s) shortPnl+=(s.entryPrice-(marketPrices[c.id]?.price||c.base))*s.qty;
+      }
+      return {username:u.username,balance:u.balance||0,total:(u.balance||0)+portVal+shortPnl};
+    }).sort((a,b)=>b.total-a.total);
+    const medals=['🥇','🥈','🥉'];
+    el.innerHTML=ranked.map((u,i)=>`
+    <div class="lb-row" ${u.username===me?.id?'style="border-color:var(--g);"':''}>
+      <div class="lb-rank">${medals[i]||'#'+(i+1)}</div>
+      <div class="lb-name">${u.username}${u.username===me?.id?' ◀':''}</div>
+      <div style="text-align:right;"><div class="lb-bal">${u.total.toLocaleString()} CR</div><div class="lb-sub">wallet: ${u.balance.toLocaleString()}</div></div>
+    </div>`).join('');
+  }catch(e){ el.innerHTML='<div style="color:var(--r);text-align:center;padding:30px 0;">Failed to load.</div>'; }
+}
+
+// keyboard shortcuts
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('reg-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
+document.getElementById('chat-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();});
 </script>
 </body>
 </html>
