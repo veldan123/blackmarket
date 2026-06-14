@@ -140,6 +140,37 @@ h1,h2{font-family:'Orbitron',sans-serif;}
 .manip-actions{display:flex;gap:8px;}
 .manip-actions button{flex:1;padding:8px;border-radius:4px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.8em;background:transparent;}
 
+/* ATTACK MODAL */
+#attack-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center;}
+#attack-modal.open{display:flex;}
+.attack-box{background:var(--panel);border:2px solid var(--r);border-radius:8px;padding:22px;max-width:340px;width:93%;max-height:90vh;overflow-y:auto;}
+.attack-box h2{font-family:'Orbitron',sans-serif;color:var(--r);font-size:.92em;margin-bottom:4px;}
+.attack-target-name{font-size:.8em;color:var(--dim);margin-bottom:14px;}
+.attack-commodity{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:10px;margin-bottom:7px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.attack-commodity:hover{border-color:var(--r);}
+.attack-commodity.selected{border-color:var(--r);background:#1a0505;}
+.atk-c-name{font-size:.82em;color:var(--orange);}
+.atk-c-detail{font-size:.75em;color:var(--dim);}
+.attack-qty-row{display:flex;gap:8px;align-items:center;margin:12px 0 14px;}
+.attack-qty-row label{font-size:.75em;color:var(--dim);}
+.attack-qty-row input{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:6px 8px;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:.85em;}
+.attack-cost-note{font-size:.73em;color:var(--dim);margin-bottom:14px;}
+.attack-actions{display:flex;gap:8px;}
+.attack-actions button{flex:1;padding:9px;border-radius:4px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.82em;background:transparent;}
+
+/* INCOMING TAKEOVER OVERLAY */
+#takeover-overlay{display:none;position:fixed;inset:0;background:rgba(10,0,0,.97);z-index:500;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+#takeover-overlay.open{display:flex;animation:pulse-border .6s infinite alternate;}
+@keyframes pulse-border{from{box-shadow:inset 0 0 0 3px #ff333355;}to{box-shadow:inset 0 0 0 3px var(--r);}}
+.takeover-icon{font-size:3.5em;margin-bottom:12px;}
+.takeover-title{font-family:'Orbitron',sans-serif;color:var(--r);font-size:1.2em;text-shadow:0 0 20px var(--r);margin-bottom:8px;}
+.takeover-msg{font-size:.88em;color:var(--fg);margin-bottom:6px;line-height:1.6;}
+.takeover-commodity{font-size:.95em;color:var(--orange);font-weight:bold;margin-bottom:20px;}
+.takeover-timer{font-family:'Orbitron',sans-serif;font-size:2.5em;color:var(--r);text-shadow:0 0 30px var(--r);margin-bottom:24px;}
+.intercept-btn{padding:14px 32px;border:2px solid var(--g);color:var(--g);background:transparent;font-family:'Orbitron',sans-serif;font-size:1em;border-radius:6px;cursor:pointer;letter-spacing:.1em;}
+.intercept-btn:hover{background:#00ff4115;}
+.ignore-btn{margin-top:12px;padding:8px 20px;border:1px solid var(--dim);color:var(--dim);background:transparent;font-family:'Share Tech Mono',monospace;font-size:.78em;border-radius:4px;cursor:pointer;opacity:.6;}
+
 /* TOAST */
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0c1f0c;border:1px solid var(--g);color:var(--g);padding:9px 18px;border-radius:4px;font-size:.82em;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center;}
 #toast.show{opacity:1;}
@@ -226,6 +257,35 @@ h1,h2{font-family:'Orbitron',sans-serif;}
   </div>
 </div>
 
+<!-- ATTACK MODAL (attacker picks target's holdings) -->
+<div id="attack-modal">
+  <div class="attack-box">
+    <h2>⚔️ HOSTILE TAKEOVER</h2>
+    <div class="attack-target-name">Target: <span id="atk-target-name"></span></div>
+    <div id="atk-commodity-list"></div>
+    <div class="attack-qty-row">
+      <label>QTY TO STEAL:</label>
+      <input type="number" id="atk-qty" min="1" value="1"/>
+    </div>
+    <div class="attack-cost-note" id="atk-cost-note">Fee: 500 CR (lost if intercepted)</div>
+    <div class="attack-actions">
+      <button style="border:1px solid var(--dim);color:var(--dim);" onclick="closeAttackModal()">CANCEL</button>
+      <button style="border:1px solid var(--r);color:var(--r);" onclick="launchAttack()">⚔️ RAID</button>
+    </div>
+  </div>
+</div>
+
+<!-- INCOMING TAKEOVER OVERLAY (target sees this) -->
+<div id="takeover-overlay">
+  <div class="takeover-icon">🚨</div>
+  <div class="takeover-title">HOSTILE TAKEOVER!</div>
+  <div class="takeover-msg" id="to-msg"></div>
+  <div class="takeover-commodity" id="to-commodity"></div>
+  <div class="takeover-timer" id="to-timer">20</div>
+  <button class="intercept-btn" onclick="interceptAttack()">⚡ INTERCEPT</button>
+  <button class="ignore-btn" onclick="ignoreAttack()">ignore (lose shares)</button>
+</div>
+
 <div id="toast"></div>
 
 <script type="module">
@@ -274,6 +334,9 @@ let me = null;
 let marketPrices = {};
 let manipData    = {};
 let chatUnsub    = null;
+let attackUnsub  = null;
+let activeAttackId = null;   // attack we're currently showing overlay for
+let takeoverTimer  = null;
 let userUnsub    = null;
 let manipUnsub   = null;
 let topupTick    = null;
@@ -361,6 +424,7 @@ window.doLogout = doLogout;
 function initApp() {
   subscribeUser();
   subscribeManip();
+  subscribeAttacks();
   loadPrices();
   startPriceTick();
   startTopupTick();
@@ -759,6 +823,239 @@ async function renderLeaderboard() {
       <div style="text-align:right;"><div class="lb-bal">${u.total.toLocaleString()} CR</div><div class="lb-sub">wallet: ${u.balance.toLocaleString()}</div></div>
     </div>`).join('');
   }catch(e){ el.innerHTML='<div style="color:var(--r);text-align:center;padding:30px 0;">Failed to load.</div>'; }
+}
+
+// ══════════════════════════════════
+// HOSTILE TAKEOVER
+// ══════════════════════════════════
+const ATTACK_DURATION = 20000; // 20 seconds
+const ATTACK_FEE      = 500;   // CR lost if intercepted
+
+// ── Leaderboard: add RAID button ──
+// (patched into renderLeaderboard output)
+const _origRenderLB = renderLeaderboard;
+async function renderLeaderboard() {
+  const el = document.getElementById('tab-leaderboard');
+  el.innerHTML = '<div style="color:var(--dim);text-align:center;padding:30px 0;font-size:.82em;">Loading…</div>';
+  try {
+    const snap = await get(ref(db,'users'));
+    if (!snap.exists()) { el.innerHTML='<div style="color:var(--dim);text-align:center;padding:30px 0;">No players.</div>'; return; }
+    const ranked = Object.values(snap.val()).map(u => {
+      let portVal=0, shortPnl=0;
+      for (const c of COMMODITIES) {
+        portVal += (u.inventory?.[c.id]||0) * (marketPrices[c.id]?.price||c.base);
+        const s = u.shorts?.[c.id];
+        if (s) shortPnl += (s.entryPrice-(marketPrices[c.id]?.price||c.base))*s.qty;
+      }
+      return { username:u.username, balance:u.balance||0, inventory:u.inventory||{}, total:(u.balance||0)+portVal+shortPnl };
+    }).sort((a,b)=>b.total-a.total);
+    const medals=['🥇','🥈','🥉'];
+    el.innerHTML = ranked.map((u,i) => {
+      const isMe = u.username === me?.id;
+      const hasHoldings = Object.values(u.inventory).some(v=>v>0);
+      const raidBtn = (!isMe && hasHoldings)
+        ? `<button class="tb" style="border-color:var(--r);color:var(--r);font-size:.7em;padding:3px 8px;" onclick="openAttackModal('${u.username}')">⚔️ RAID</button>`
+        : '';
+      return `
+      <div class="lb-row" ${isMe?'style="border-color:var(--g);"':''}>
+        <div class="lb-rank">${medals[i]||'#'+(i+1)}</div>
+        <div class="lb-name">${u.username}${isMe?' ◀':''}</div>
+        <div style="text-align:right;display:flex;align-items:center;gap:8px;">
+          ${raidBtn}
+          <div><div class="lb-bal">${u.total.toLocaleString()} CR</div><div class="lb-sub">wallet: ${u.balance.toLocaleString()}</div></div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--r);text-align:center;padding:30px 0;">Failed to load.</div>';
+  }
+}
+
+// ── Attack modal (attacker side) ──
+let attackTargetId   = null;
+let attackCommodityId = null;
+
+async function openAttackModal(targetId) {
+  attackTargetId    = targetId;
+  attackCommodityId = null;
+  document.getElementById('atk-target-name').textContent = '@' + targetId;
+  document.getElementById('atk-commodity-list').innerHTML = '<div style="color:var(--dim);font-size:.8em;padding:8px 0;">Loading…</div>';
+  document.getElementById('attack-modal').classList.add('open');
+
+  const snap = await get(ref(db, `users/${targetId}/inventory`));
+  const inv  = snap.val() || {};
+  const held = COMMODITIES.filter(c => (inv[c.id]||0) > 0);
+
+  if (!held.length) {
+    document.getElementById('atk-commodity-list').innerHTML = '<div style="color:var(--dim);font-size:.8em;padding:8px 0;">Target holds nothing to steal.</div>';
+    return;
+  }
+  document.getElementById('atk-commodity-list').innerHTML = held.map(c => `
+    <div class="attack-commodity" id="atk-c-${c.id}" onclick="selectAttackCommodity('${c.id}')">
+      <div><div class="atk-c-name">${c.icon} ${c.name}</div><div class="atk-c-detail">They hold: ${inv[c.id]} units</div></div>
+      <div class="atk-c-detail">${(marketPrices[c.id]?.price||c.base).toLocaleString()} CR/unit</div>
+    </div>`).join('');
+  // pre-select first
+  selectAttackCommodity(held[0].id);
+}
+window.openAttackModal = openAttackModal;
+
+function selectAttackCommodity(cId) {
+  attackCommodityId = cId;
+  document.querySelectorAll('.attack-commodity').forEach(el => el.classList.remove('selected'));
+  document.getElementById('atk-c-'+cId)?.classList.add('selected');
+  updateAttackCostNote();
+}
+window.selectAttackCommodity = selectAttackCommodity;
+
+function updateAttackCostNote() {
+  const qty  = parseInt(document.getElementById('atk-qty')?.value)||1;
+  const note = document.getElementById('atk-cost-note');
+  if (note) note.textContent = `Fee: ${ATTACK_FEE.toLocaleString()} CR (lost if intercepted) · You steal ${qty} unit(s) if successful`;
+}
+
+function closeAttackModal() {
+  document.getElementById('attack-modal').classList.remove('open');
+  attackTargetId = null; attackCommodityId = null;
+}
+window.closeAttackModal = closeAttackModal;
+
+async function launchAttack() {
+  if (!attackTargetId || !attackCommodityId) { toast('Select a commodity','warn'); return; }
+  const qty = Math.max(1, parseInt(document.getElementById('atk-qty')?.value)||1);
+  if ((me.balance||0) < ATTACK_FEE) { toast(`Need ${ATTACK_FEE} CR fee`,'err'); return; }
+
+  // Verify target still holds enough
+  const invSnap = await get(ref(db,`users/${attackTargetId}/inventory/${attackCommodityId}`));
+  const held = invSnap.val() || 0;
+  if (held < qty) { toast(`Target only holds ${held} — reduce qty`,'err'); return; }
+
+  const c = COMMODITIES.find(x=>x.id===attackCommodityId);
+  try {
+    // Deduct fee upfront
+    await update(ref(db,`users/${me.id}`), { balance: (me.balance||0) - ATTACK_FEE });
+    // Write attack
+    const attackRef = push(ref(db,'attacks'));
+    await set(attackRef, {
+      attackerId:   me.id,
+      targetId:     attackTargetId,
+      commodityId:  attackCommodityId,
+      commodityName: c.name,
+      commodityIcon: c.icon,
+      qty,
+      fee:          ATTACK_FEE,
+      status:       'pending',
+      deadline:     Date.now() + ATTACK_DURATION,
+      createdAt:    Date.now(),
+    });
+    closeAttackModal();
+    toast(`⚔️ Raid launched on @${attackTargetId} — waiting 20s…`, 'warn', 5000);
+
+    // Attacker resolves after 20s if still pending
+    setTimeout(async () => {
+      const aSnap = await get(attackRef);
+      if (!aSnap.exists() || aSnap.val().status !== 'pending') return;
+      await resolveAttack(attackRef.key, aSnap.val(), 'completed');
+    }, ATTACK_DURATION + 500);
+
+  } catch(e) { toast('Attack failed: '+e.message,'err'); }
+}
+window.launchAttack = launchAttack;
+
+// ── Attack listener (target side) — fires ONCE per new pending attack ──
+function subscribeAttacks() {
+  if (attackUnsub) attackUnsub();
+  attackUnsub = onValue(ref(db,'attacks'), snap => {
+    if (!snap.exists()) return;
+    const now = Date.now();
+    snap.forEach(child => {
+      const a = child.val();
+      if (a.targetId !== me.id) return;
+      if (a.status !== 'pending') return;
+      if (a.deadline < now) return;
+      if (activeAttackId === child.key) return; // already showing
+      // Show overlay exactly once
+      activeAttackId = child.key;
+      showTakeoverOverlay(child.key, a);
+    });
+  });
+}
+
+function showTakeoverOverlay(attackId, a) {
+  clearInterval(takeoverTimer);
+  document.getElementById('to-msg').textContent    = `@${a.attackerId} is raiding your stash!`;
+  document.getElementById('to-commodity').textContent = `${a.commodityIcon} ${a.commodityName} — ${a.qty} unit(s)`;
+  document.getElementById('takeover-overlay').classList.add('open');
+
+  let remaining = Math.ceil((a.deadline - Date.now()) / 1000);
+  document.getElementById('to-timer').textContent = remaining;
+
+  takeoverTimer = setInterval(() => {
+    remaining--;
+    const el = document.getElementById('to-timer');
+    if (el) el.textContent = Math.max(0, remaining);
+    if (remaining <= 0) {
+      clearInterval(takeoverTimer);
+      closeTakeoverOverlay();
+    }
+  }, 1000);
+}
+
+function closeTakeoverOverlay() {
+  clearInterval(takeoverTimer);
+  document.getElementById('takeover-overlay').classList.remove('open');
+  activeAttackId = null;
+}
+
+async function interceptAttack() {
+  if (!activeAttackId) return;
+  clearInterval(takeoverTimer);
+  const aSnap = await get(ref(db,`attacks/${activeAttackId}`));
+  if (!aSnap.exists() || aSnap.val().status !== 'pending') {
+    toast('Too late — raid already resolved','err');
+    closeTakeoverOverlay(); return;
+  }
+  if (Date.now() > aSnap.val().deadline) {
+    toast('Too late — 20 seconds expired','err');
+    closeTakeoverOverlay(); return;
+  }
+  await resolveAttack(activeAttackId, aSnap.val(), 'intercepted');
+  closeTakeoverOverlay();
+  toast('⚡ Raid intercepted! Shares safe, attacker lost their fee.','ok', 5000);
+}
+window.interceptAttack = interceptAttack;
+
+function ignoreAttack() {
+  closeTakeoverOverlay();
+}
+window.ignoreAttack = ignoreAttack;
+
+async function resolveAttack(attackId, a, outcome) {
+  if (outcome === 'completed') {
+    // Transfer shares from target to attacker
+    const [targetSnap, attackerSnap] = await Promise.all([
+      get(ref(db,`users/${a.targetId}/inventory/${a.commodityId}`)),
+      get(ref(db,`users/${a.attackerId}/inventory/${a.commodityId}`)),
+    ]);
+    const targetHeld   = targetSnap.val()  || 0;
+    const attackerHeld = attackerSnap.val()|| 0;
+    const steal = Math.min(a.qty, targetHeld);
+    if (steal > 0) {
+      await update(ref(db,'users'), {
+        [`${a.targetId}/inventory/${a.commodityId}`]:   Math.max(0, targetHeld - steal) || null,
+        [`${a.attackerId}/inventory/${a.commodityId}`]: attackerHeld + steal,
+      });
+    }
+    await set(ref(db,`attacks/${attackId}/status`), 'completed');
+    if (me.id === a.attackerId) {
+      toast(`⚔️ Raid success! Stole ${steal}× ${a.commodityName} from @${a.targetId}`, 'ok', 5000);
+    }
+  } else {
+    // Intercepted — refund fee to target, attacker already paid
+    const targetBal = (await get(ref(db,`users/${a.targetId}/balance`))).val() || 0;
+    await update(ref(db,`users/${a.targetId}`), { balance: targetBal + a.fee });
+    await set(ref(db,`attacks/${attackId}/status`), 'intercepted');
+  }
 }
 
 // keyboard shortcuts
