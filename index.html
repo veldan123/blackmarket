@@ -771,7 +771,16 @@ async function mBuy(cId) {
   const total=price*qty, bal=me.balance||0;
   if(bal<total){toast(`Need ${total.toLocaleString()} CR, have ${bal.toLocaleString()} CR`,'err');return;}
   try{
-    await update(ref(db,`users/${me.id}`),{balance:bal-total,[`inventory/${cId}`]:(me.inventory?.[cId]||0)+qty});
+    const prevQty=me.inventory?.[cId]||0;
+    const prevAvg=me.avgCost?.[cId]||0;
+    // Weighted average cost basis
+    const newQty=prevQty+qty;
+    const newAvg=Math.round((prevAvg*prevQty + price*qty)/newQty);
+    await update(ref(db,`users/${me.id}`),{
+      balance:bal-total,
+      [`inventory/${cId}`]:newQty,
+      [`avgCost/${cId}`]:newAvg,
+    });
     toast(`Bought ${qty}× ${c.name} for ${total.toLocaleString()} CR`,'ok');
   }catch(e){toast('Buy failed: '+e.message,'err');}
 }
@@ -785,9 +794,16 @@ async function mSell(cId) {
   const price=marketPrices[cId]?.price||c.base;
   const total=price*qty;
   const newQty=held-qty;
+  const avgCost=me.avgCost?.[cId]||0;
+  const pnl=avgCost ? (price-avgCost)*qty : null;
   try{
-    await update(ref(db,`users/${me.id}`),{balance:(me.balance||0)+total,[`inventory/${cId}`]:newQty||null});
-    toast(`Sold ${qty}× ${c.name} for ${total.toLocaleString()} CR`,'ok');
+    await update(ref(db,`users/${me.id}`),{
+      balance:(me.balance||0)+total,
+      [`inventory/${cId}`]:newQty||null,
+      [`avgCost/${cId}`]:newQty?avgCost:null,
+    });
+    const pnlStr=pnl!==null ? ` · P&L: ${pnl>=0?'+':''}${pnl.toLocaleString()} CR` : '';
+    toast(`Sold ${qty}× ${c.name} for ${total.toLocaleString()} CR${pnlStr}`, pnl>=0?'ok':'err', 5000);
   }catch(e){toast('Sell failed: '+e.message,'err');}
 }
 window.mSell = mSell;
@@ -911,8 +927,19 @@ function renderPortfolio() {
   if(heldItems.length){
     html+=`<div class="section-hdr">LONG POSITIONS</div>`;
     html+=heldItems.map(({c,qty,price,val})=>{
-      const prev=marketPrices[c.id]?.prevPrice||c.base, up=price>=prev, pct=((price-prev)/prev*100).toFixed(1);
-      return `<div class="port-row"><div><div class="port-name">${c.icon} ${c.name}</div><div class="port-detail">${qty} units × ${price.toLocaleString()} CR</div></div><div style="text-align:right;"><div class="port-pnl">${val.toLocaleString()} CR</div><div class="port-detail ${up?'up':'down'}">${up?'▲':'▼'}${Math.abs(pct)}%</div></div></div>`;
+      const avgCost=me.avgCost?.[c.id]||0;
+      const pnl=avgCost ? (price-avgCost)*qty : null;
+      const pnlPct=avgCost ? ((price-avgCost)/avgCost*100).toFixed(1) : null;
+      const pnlStr=pnl!==null
+        ? `<div class="port-detail ${pnl>=0?'up':'down'}" style="margin-top:2px;">If sold now: ${pnl>=0?'+':''}${pnl.toLocaleString()} CR (${pnl>=0?'+':''}${pnlPct}%) · avg buy: ${avgCost.toLocaleString()} CR</div>`
+        : '';
+      return `<div class="port-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+          <div><div class="port-name">${c.icon} ${c.name}</div><div class="port-detail">${qty} units × ${price.toLocaleString()} CR</div></div>
+          <div style="text-align:right;"><div class="port-pnl">${val.toLocaleString()} CR</div></div>
+        </div>
+        ${pnlStr}
+      </div>`;
     }).join('');
   }
   if(shortItems.length){
